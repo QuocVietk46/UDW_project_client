@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-nav {
+    @apply px-4 py-2 rounded-md  hover:bg-slate-500 hover:text-yellow-50 transition-colors duration-200 ease-in-out hover:cursor-pointer;
+  }
+  .btn {
+    @apply px-4 py-2 rounded-md bg-gray-600 text-white hover:bg-gray-500 backdrop-blur-md transition-colors duration-200 ease-in-out;
+  }
+  .input-form {
+    @apply w-full outline outline-gray-600 outline-2 p-2 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50;
+  }
+}
