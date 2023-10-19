@@ -1,7 +1,3 @@
-<script setup>
-import defaultLayout from '../layouts/defaultLayout.vue';
-</script>
+<script setup></script>
 
-<template>
-  <defaultLayout> </defaultLayout>
-</template>
+<template><h1>this is home page</h1></template>

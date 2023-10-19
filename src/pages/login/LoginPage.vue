@@ -1,7 +1,42 @@
 <script setup>
 import { ref } from 'vue';
-import AuthLayout from '../../layouts/authLayout.vue';
-// const props = ref();
+import { Form } from 'vee-validate';
+import { useRouter } from 'vue-router';
+
+import loginSchema from './validation.js';
+import TextInput from '../../components/inputs/TextInput.vue';
+import { useAuth } from '../../hooks/useAuth';
+import { useAlertStore } from '../../stores/alertStore';
+
+const router = useRouter();
+const { login } = useAuth();
+const buttonSubmit = ref();
+const alertStore = useAlertStore();
+
+const onInvalidSubmit = () => {
+  buttonSubmit.value.disabled = true;
+  setTimeout(() => {
+    buttonSubmit.value.disabled = false;
+  }, 1000);
+};
+
+const onSubmit = async (values) => {
+  alertStore.setLoading(true);
+  const res = await login({
+    email: values.email,
+    password: values.password,
+  });
+  if (!res) {
+    alertStore.setLoading(false);
+    return;
+  }
+  alertStore.setLoading(false);
+  if (res.data.user.role === 'admin') {
+    router.push({ name: 'Admin' });
+    return;
+  }
+  router.push({ name: 'Home' });
+};
 </script>
 
 <template>
@@ -10,24 +45,24 @@ import AuthLayout from '../../layouts/authLayout.vue';
       <div class="py-16">
         <h1 class="text-2xl font-bold text-center">Đăng nhập</h1>
       </div>
-      <form>
-        <div class="flex gap-y-7 flex-col">
-          <div>
-            <input
-              class="input-form"
-              placeholder="Nhập địa chỉ email hoặc SDT"
-              type="email"
-              id="email"
-            />
-          </div>
-          <div>
-            <input
-              class="input-form"
-              placeholder="Nhập mật khẩu"
-              type="email"
-              id="email"
-            />
-          </div>
+      <Form
+        @submit="onSubmit"
+        :validation-schema="loginSchema"
+        @invalid-submit="onInvalidSubmit"
+      >
+        <div class="flex gap-y-8 flex-col">
+          <TextInput
+            class="input-form"
+            name="email"
+            type="email"
+            placeholder="Địa chỉ email"
+          />
+          <TextInput
+            class="input-form"
+            name="password"
+            type="password"
+            placeholder="Địa chỉ email"
+          />
           <div class="flex justify-end">
             <router-link
               :to="{ name: 'Forgot-password' }"
@@ -35,17 +70,17 @@ import AuthLayout from '../../layouts/authLayout.vue';
               >Bạn quên mật khẩu?</router-link
             >
           </div>
-
-          <div class="pt-8">
-            <button
-              class="btn w-full rounded-none bg-black font-bold required:border-red-500"
-              type="submit"
-            >
-              ĐĂNG NHẬP
-            </button>
-          </div>
         </div>
-      </form>
+        <div class="pt-8">
+          <button
+            ref="buttonSubmit"
+            class="btn-submit w-full rounded-none bg-black font-bold required:border-red-500"
+            type="submit"
+          >
+            ĐĂNG NHẬP
+          </button>
+        </div>
+      </Form>
 
       <div class="py-10">
         <p class="text-sm text-center">

@@ -1,0 +1,23 @@
+"cart": {
+        "_id": "6522b9877d03f05569367e2b",
+        "userId": "6516c9b89312f509dd80550d",
+        "products": [
+            {
+                "product": {
+                    "_id": "6522b8c57d03f05569367e0c",
+                    "title": "Ao thun rách",
+                    "price": "100000",
+                    "images": [
+                        {
+                            "_id": "6522b8c57d03f05569367e0d",
+                            "filename": "1696774341248.jpg",
+                            "path": "/public/images/1696774341248.jpg"
+                        }
+                    ]
+                },
+                "quantity": 35,
+                "_id": "6522b9877d03f05569367e2c"
+            }
+        ],
+        "__v": 0
+    }

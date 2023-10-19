@@ -1,12 +1,14 @@
 <script setup>
-import { useThemeStore } from './stores/theme';
+import { useAlertStore } from './stores/alertStore';
+import Alert from './components/Alert.vue';
 
-const themeStore = useThemeStore();
+const alertStore = useAlertStore();
 </script>
 
 <template>
-  <div :class="themeStore.theme">
-    <router-view></router-view>
+  <div>
+    <Alert v-if="alertStore.alert"></Alert>
+    <router-view> </router-view>
   </div>
 </template>
 
