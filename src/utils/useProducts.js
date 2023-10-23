@@ -1,6 +1,13 @@
-import { getDataAPI } from '../utils/fetchData';
+import {
+  getDataAPI,
+  postDataAPI,
+  deleteDataAPI,
+  patchDataAPI,
+} from '../utils/fetchData';
+import { useUserStore } from '@/stores/userStore';
 
 export const useProducts = () => {
+  const { token } = useUserStore();
   const findProducts = async (query) => {
     try {
       const res = await getDataAPI('products', query);
@@ -29,18 +36,18 @@ export const useProducts = () => {
 
   const createProduct = async (product) => {
     try {
-      const res = await getDataAPI('products', product);
-      console.log({ res });
+      const res = await postDataAPI('admin/products', product, token);
+      console.log({ resCreate: res });
       return { newProduct: res.data.product };
     } catch (error) {
-      console.log({ error });
+      console.log({ errorCrateProduct: error });
       return false;
     }
   };
 
-  const updateProduct = async (id, post) => {
+  const updateProduct = async (id, data) => {
     try {
-      const res = await getDataAPI(`products/${id}`, post);
+      const res = await patchDataAPI(`admin/products/${id}`, data, token);
       console.log({ res });
       return { newProduct: res.data.product };
     } catch (error) {
@@ -51,7 +58,7 @@ export const useProducts = () => {
 
   const deleteProduct = async (id) => {
     try {
-      const res = await getDataAPI(`products/${id}`);
+      const res = await deleteDataAPI(`admin/products/${id}`, token);
       console.log({ res });
       return true;
     } catch (error) {

@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 
-import { useAuth } from '../../hooks/useAuth';
+import { useUserStore } from '@/stores/userStore';
 
 const props = defineProps({
   class: {
@@ -11,7 +11,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const { logout } = useAuth();
+const { logout } = useUserStore();
 
 const handleLogout = async () => {
   await logout();

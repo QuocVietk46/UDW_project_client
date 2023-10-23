@@ -10,6 +10,7 @@ import { useAlertStore } from '../stores/alertStore';
 export const useCart = () => {
   const userStore = useUserStore();
   const alertStore = useAlertStore();
+
   const findCart = async () => {
     try {
       const res = await getDataAPI('cart', {}, userStore.token);

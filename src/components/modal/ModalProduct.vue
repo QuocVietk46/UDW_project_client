@@ -1,18 +1,19 @@
 <script setup>
 import { ref } from 'vue';
+
 import Carousel from '../carousel/Carousel.vue';
+import Modal from './Modal.vue';
+
+import { useProductsStore } from '@/stores/productsStore';
+
 const props = defineProps({
-  classButton: {
-    type: String,
-    default: '',
-  },
   product: {
     type: Object,
     default: {
       images: [],
       title: '',
-      price: 0,
-      sale: 0,
+      price: undefined,
+      sale: undefined,
       description: '',
       type: '',
       status: '',
@@ -20,21 +21,23 @@ const props = defineProps({
   },
 });
 
+const productsStore = useProductsStore();
+
 const newProduct = ref({
-  _id: '',
+  _id: '' || props.product._id,
   images: [],
-  title: '',
-  price: null,
-  sale: null,
-  description: '',
-  category: '',
-  status: '',
+  title: '' || props.product.title,
+  price: undefined || props.product.price,
+  sale: undefined || props.product.sale,
+  describe: '' || props.product.describe,
+  quantity: undefined || props.product.quantity,
+  category: '' || props.product.category,
+  status: '' || props.product.status,
 });
-const isOpen = ref(false);
 const images = ref([]);
 const deleteI = ref([]);
-
-console.log({ modal: props.product });
+const isOpen = ref(false);
+const isLoading = ref(false);
 
 const handleInputImages = (e) => {
   const files = e.target.files;
@@ -44,132 +47,213 @@ const handleInputImages = (e) => {
     const file = URL.createObjectURL(files[i]);
     images.value = [...images.value, { filename: files[i].name, path: file }];
   }
-  console.log(newProduct.value.images);
-};
-
-const handleSubmit = () => {
-  console.log({ product: newProduct.value });
+  console.log({ images: newProduct.value.images });
 };
 
 const handleDeleteImage = (image) => {
+  // delete image in server
   if (image._id) {
-    deleteI.value.push(image);
+    deleteI.value.push(image._id);
+
+    props.product.images = props.product.images.filter(
+      (img) => img._id !== image._id
+    );
+
+    console.log({ deleteI: deleteI.value });
     return;
   }
+  // delete image in client
   newProduct.value.images = newProduct.value.images.filter(
     (img) => img.name !== image.filename
   );
   images.value = images.value.filter((img) => img.filename !== image.filename);
-  console.log({ deleteI: deleteI.value });
+};
+
+const formatData = () => {
+  const formData = new FormData();
+  newProduct.value.images.map((img) => formData.append('images', img));
+
+  newProduct.value.title !== props.product.title &&
+    formData.append('title', newProduct.value.title);
+  newProduct.value.price !== props.product.price &&
+    formData.append('price', newProduct.value.price);
+  newProduct.value.sale !== props.product.sale &&
+    formData.append('sale', newProduct.value.sale);
+  newProduct.value.describe !== props.product.describe &&
+    formData.append('describe', newProduct.value.describe);
+  newProduct.value.category !== props.product.category &&
+    formData.append('category', newProduct.value.category);
+  newProduct.value.status !== props.product.status &&
+    formData.append('status', newProduct.value.status);
+  newProduct.value.quantity !== props.product.quantity &&
+    formData.append('quantity', newProduct.value.quantity);
+  deleteI.value.length > 0 && formData.append('deleteI', deleteI.value);
+  return formData;
+};
+
+const handleSubmit = async () => {
+  isLoading.value = true;
+  const formData = formatData();
+  if (props.product._id) {
+    await productsStore.editProduct(props.product._id, formData);
+  } else {
+    await productsStore.addProduct(formData);
+  }
+  deleteI.value = [];
+  isLoading.value = false;
+  handleClose();
+  return;
+};
+
+// handle modal
+const handleClose = () => {
+  isOpen.value = false;
+};
+const handleOpen = () => {
+  isOpen.value = true;
 };
 </script>
 <template>
-  <button @click="isOpen = true" :class="classButton"><slot></slot></button>
-
-  <Transition name="fade">
-    <Teleport to="body">
-      <div
-        v-if="isOpen"
-        class="bg-gray-300 mx-auto flex flex-col w-fit fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-      >
-        <div class="flex gap-2 p-4">
-          <div
-            v-if="newProduct.images.length > 0 || props.product.title"
-            class="w-[24rem] h-[34rem]"
+  <Modal :open="isOpen" @close="handleClose" @open="handleOpen">
+    <template #button> <slot></slot> </template>
+    <template #content>
+      <div class="flex gap-2 p-4">
+        <div
+          v-if="images.length > 0 || props.product.images.length > 0"
+          class="w-[24rem] h-[34rem]"
+        >
+          <Carousel
+            :images="[...props.product.images, ...images]"
+            @deleteI="(image) => handleDeleteImage(image)"
+            edit
+          />
+        </div>
+        <div
+          v-else
+          class="w-[24rem] h-[34rem] border-dashed border-black border-2 flex justify-center items-center"
+        >
+          <label
+            for="images-input"
+            class="cursor-pointer w-full h-full flex justify-center items-center hover:bg-slate-100"
+            >Thêm hình ảnh</label
           >
-            <Carousel
-              :images="[...images, ...props.product.images]"
-              @deleteI="(image) => handleDeleteImage(image)"
-              edit
-            />
-          </div>
+        </div>
+        <div class="flex flex-col gap-5 min-w-[25rem]">
+          <input
+            @change="handleInputImages"
+            type="file"
+            name="images"
+            id="images-input"
+            class="hidden"
+            multiple
+          />
+          <input
+            type="text"
+            name="title"
+            v-model="newProduct.title"
+            class="p-1 border-2 bg-inherit"
+            placeholder="Tiêu đề sản phẩm"
+          />
           <div
-            v-else
-            class="w-[24rem] h-[34rem] border-dashed border-black border-2 flex justify-center items-center"
+            class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['VND'] after:text-gray-400"
           >
-            <label
-              for="images-input"
-              class="cursor-pointer w-full h-full flex justify-center items-center hover:bg-slate-100"
-              >Thêm hình ảnh</label
-            >
-          </div>
-          <div class="flex flex-col gap-5 min-w-[25rem]">
-            <input
-              @change="handleInputImages"
-              type="file"
-              name="images"
-              id="images-input"
-              class="hidden"
-              multiple
-            />
-            <input
-              type="text"
-              name="title"
-              v-model="newProduct.title"
-              class="p-1 border-2 bg-inherit"
-              placeholder="Tiêu đề sản phẩm"
-            />
             <input
               type="number"
               name="price"
               v-model="newProduct.price"
-              class="p-1 border-2 bg-inherit"
+              class="p-1 border-2 bg-inherit w-full"
               placeholder="Giá sản phẩm"
             />
+          </div>
+          <div
+            class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['%'] after:text-gray-400"
+          >
             <input
               type="number"
               name="sale"
               v-model="newProduct.sale"
-              class="p-1 border-2 bg-inherit"
+              class="p-1 border-2 bg-inherit w-full"
               placeholder="Giảm giá (nếu có)"
             />
-            <textarea
-              cols="30"
-              rows="8"
-              type="text"
-              name="title"
-              v-model="newProduct.description"
-              class="p-1 border-2 bg-inherit"
-              placeholder="Mô tả sản phẩm"
-            ></textarea>
-
-            <select
-              class="p-1 border-2 bg-inherit"
-              name="category"
-              v-model="newProduct.category"
-            >
-              <option value="">Loại</option>
-              <option value="t-shirt">t-shirt</option>
-              <option value="short">short</option>
-              <option value="pans">pans</option>
-            </select>
-            <select
-              class="p-1 border-2 bg-inherit"
-              name="status"
-              v-model="newProduct.status"
-            >
-              <option value="">Trạng thái</option>
-              <option value="draft">Nháp</option>
-              <option value="unavailable">Không có sẵn</option>
-              <option value="available">có sẵn</option>
-              <option value="stop">Ngừng kinh doanh</option>
-            </select>
-            <label
-              for="images-input"
-              class="px-4 py-2 text-center cursor-pointer bg-slate-200 hover:shadow-md hover:bg-slate-300"
-            >
-              Thêm ảnh
-            </label>
           </div>
-        </div>
-        <div class="flex gap-4 px-4 pb-4 justify-end">
-          <button
-            @click="isOpen = false"
-            class="px-6 py-2 hover:bg-red-500 hover:shadow-md hover:text-white"
+          <input
+            type="number"
+            name="quantity"
+            v-model="newProduct.quantity"
+            class="p-1 border-2 bg-inherit w-full"
+            placeholder="Số lượng sản phẩm"
+          />
+          <textarea
+            cols="30"
+            rows="6"
+            type="text"
+            name="describe"
+            v-model="newProduct.describe"
+            class="p-1 border-2 bg-inherit"
+            placeholder="Mô tả sản phẩm"
+          ></textarea>
+          <select
+            class="p-1 border-2 bg-inherit"
+            name="category"
+            v-model="newProduct.category"
           >
-            close
-          </button>
-          <div>
+            <option value="">Loại</option>
+            <option value="t-shirt">Áo tay ngắn</option>
+            <option value="short">Quần short</option>
+            <option value="jeans">Quần jean</option>
+            <option value="jacket">Áo khoác</option>
+          </select>
+          <select
+            class="p-1 border-2 bg-inherit"
+            name="status"
+            v-model="newProduct.status"
+          >
+            <option value="">Trạng thái</option>
+            <option value="draft">Nháp</option>
+            <option value="unavailable">Không có sẵn</option>
+            <option value="available">có sẵn</option>
+            <option value="stop">Ngừng kinh doanh</option>
+          </select>
+          <label
+            for="images-input"
+            class="px-4 py-2 text-center cursor-pointer bg-slate-200 hover:shadow-md hover:bg-slate-300"
+          >
+            Thêm ảnh
+          </label>
+        </div>
+      </div>
+      <div class="flex gap-4 px-4 pb-4 justify-end">
+        <button
+          @click="handleClose"
+          class="px-6 py-2 hover:bg-red-500 hover:shadow-md hover:text-white"
+        >
+          Đóng
+        </button>
+        <div>
+          <div v-if="isLoading">
+            <button
+              type="button"
+              class="px-6 py-2 bg-fuchsia-200 flex"
+              disabled
+            >
+              <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  fill="none"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Đang xử lý
+            </button>
+          </div>
+          <div v-else>
             <button
               v-if="props.product.title"
               @click="handleSubmit"
@@ -188,6 +272,6 @@ const handleDeleteImage = (image) => {
           </div>
         </div>
       </div>
-    </Teleport>
-  </Transition>
+    </template>
+  </Modal>
 </template>

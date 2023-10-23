@@ -1,13 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 import SearchInput from '../inputs/searchInput.vue';
 import UserButton from '../buttons/UserButton.vue';
 import Bade from '../bade/index.vue';
 import { useCartStore } from '../../stores/cartStore';
-import { useSearchStore } from '../../stores/searchStore';
 
-const search = storeToRefs(useSearchStore()).search;
+const route = useRoute();
+
 const listNav = [
   {
     title: 'Toàn bộ',
@@ -25,6 +26,7 @@ const listNav = [
   },
 ];
 
+const search = route.query.search;
 const value = storeToRefs(useCartStore()).amount;
 </script>
 

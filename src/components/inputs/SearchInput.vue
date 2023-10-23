@@ -1,8 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-import { useSearchStore } from '../../stores/searchStore';
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
 const props = defineProps({
   push: {
@@ -27,22 +25,34 @@ const props = defineProps({
   },
 });
 
-const { setSearch, search } = useSearchStore();
-const router = useRouter();
+const emit = defineEmits(['value']);
 
-const searchText = ref(search);
+const router = useRouter();
+const route = useRoute();
+
+const { search, ...query } = route.query;
+const searchText = ref(search || '');
 const isFocus = ref(false);
 
 const handleSubmit = async () => {
   if (!searchText.value) return;
-  setSearch(searchText.value);
-  router.push({ name: props.push, query: { search: searchText.value } });
+  router.push({
+    name: props.push,
+    query: { search: searchText.value, ...query },
+  });
 };
 
 const handleDelete = () => {
   searchText.value = '';
-  setSearch('');
 };
+
+watch(
+  () => searchText.value,
+  () => {
+    emit('value', searchText.value);
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <div

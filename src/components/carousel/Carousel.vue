@@ -1,18 +1,33 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
+
 const props = defineProps({
   images: {
     type: Array,
-    default: [],
+    default: [
+      {
+        filename: 'default.jpg',
+        path: 'src\\assets\\man_12.jpg',
+      },
+      {
+        filename: 'default.jpg',
+        path: 'src\\assets\\man_11.jpg',
+      },
+      {
+        filename: 'default.jpg',
+        path: 'src\\assets\\man_13.jpg',
+      },
+      {
+        filename: 'default.jpg',
+        path: 'src\\assets\\man_14.jpg',
+      },
+    ],
   },
   edit: {
     type: Boolean,
     default: false,
   },
 });
-
-console.log({ carousel: props.images });
-
 const emits = defineEmits(['deleteI']);
 
 const active = ref(0);
@@ -70,7 +85,9 @@ const handleDelete = () => {
         :alt="image.filename"
         loading="lazy"
         class="w-full h-full object-cover block flex-shrink-0 flex-grow-0 transform transition-transform duration-500 ease-in-out"
-        :class="'-translate-x-' + '[' + active * 100 + '%]'"
+        :style="{
+          transform: `translateX(-${active * 100}%)`,
+        }"
       />
     </div>
     <div>

@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps } from 'vue';
-import { useCart } from '../../hooks/useCart';
+import { useCartStore } from '@/stores/cartStore';
 
 const props = defineProps({
   product: {
@@ -9,7 +9,7 @@ const props = defineProps({
   },
 });
 
-const { addProductToCart } = useCart();
+const { addProductToCart } = useCartStore();
 
 const handleAddCart = async () => {
   console.log('Add to cart', props.product._id);

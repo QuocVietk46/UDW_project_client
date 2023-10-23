@@ -9,23 +9,28 @@ const getDataAPI = async (url, query, token) => {
   return res;
 };
 
-const postDataAPI = async (url, post, token) => {
-  const res = await axios.post(`http://localhost:3000/api/${url}`, post, {
-    headers: { Authorization: token },
+const postDataAPI = async (url, data, token) => {
+  const res = await axios.post(`http://localhost:3000/api/${url}`, data, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'multipart/form-data',
+    },
   });
   return res;
 };
 
-const putDataAPI = async (url, post, token) => {
-  const res = await axios.put(`http://localhost:3000/api/${url}`, post, {
+const putDataAPI = async (url, data, token) => {
+  const res = await axios.put(`http://localhost:3000/api/${url}`, data, {
     headers: { Authorization: token },
+    'Content-Type': 'multipart/form-data',
   });
   return res;
 };
 
-const patchDataAPI = async (url, post, token) => {
-  const res = await axios.patch(`http://localhost:3000/api/${url}`, post, {
+const patchDataAPI = async (url, data, token) => {
+  const res = await axios.patch(`http://localhost:3000/api/${url}`, data, {
     headers: { Authorization: token },
+    'Content-Type': 'multipart/form-data',
   });
   return res;
 };

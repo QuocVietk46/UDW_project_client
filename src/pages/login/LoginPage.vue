@@ -4,14 +4,15 @@ import { Form } from 'vee-validate';
 import { useRouter } from 'vue-router';
 
 import loginSchema from './validation.js';
-import TextInput from '../../components/inputs/TextInput.vue';
-import { useAuth } from '../../hooks/useAuth';
-import { useAlertStore } from '../../stores/alertStore';
+import TextInput from '@/components/inputs/TextInput.vue';
+import { useAlertStore } from '@/stores/alertStore';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
-const { login } = useAuth();
-const buttonSubmit = ref();
+const { login } = useUserStore();
 const alertStore = useAlertStore();
+
+const buttonSubmit = ref();
 
 const onInvalidSubmit = () => {
   buttonSubmit.value.disabled = true;
@@ -21,21 +22,10 @@ const onInvalidSubmit = () => {
 };
 
 const onSubmit = async (values) => {
-  alertStore.setLoading(true);
-  const res = await login({
+  await login({
     email: values.email,
     password: values.password,
   });
-  if (!res) {
-    alertStore.setLoading(false);
-    return;
-  }
-  alertStore.setLoading(false);
-  if (res.data.user.role === 'admin') {
-    router.push({ name: 'Admin' });
-    return;
-  }
-  router.push({ name: 'Home' });
 };
 </script>
 

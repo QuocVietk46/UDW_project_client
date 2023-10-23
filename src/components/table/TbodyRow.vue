@@ -8,7 +8,6 @@ const props = defineProps({
     required: true,
   },
 });
-console.log(props.product);
 const changeStatus = reactive({
   isChange: false,
   preStatus: props.product.status,
@@ -31,44 +30,36 @@ const changeStatus = reactive({
 </script>
 <template>
   <tr>
-    <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white"
-    >
+    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
       <img
-        :src="'http://localhost:3000' + props.product.images[0].path"
+        :src="'http://localhost:3000' + props.product.images[0]?.path"
         loading="lazy"
         class="max-w-[8rem]"
       />
     </td>
-    <td
-      class="py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white"
-    >
+    <td class="py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap">
       <ModalProduct :product="product">
-        {{ props.product.title }}
+        {{ props.product?.title }}
       </ModalProduct>
     </td>
-    <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white"
-    >
-      {{ props.product.category }}
+    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
+      {{ props.product?.category }}
     </td>
     <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center dark:text-white"
+      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center"
     >
-      {{ props.product.quantity }}
+      {{ props.product?.quantity }}
+    </td>
+    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
+      <ViewStar :star="props.product?.rate"></ViewStar>
     </td>
     <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white"
+      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center"
     >
-      <ViewStar :star="props.product.rate"></ViewStar>
+      {{ props.product?.price }}
     </td>
     <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center dark:text-white"
-    >
-      {{ props.product.price }}
-    </td>
-    <td
-      class="relative py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center dark:text-white"
+      class="relative py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center"
     >
       <select
         class="p-2 group-hover:bg-gray-100 focus:outline-none"
@@ -101,10 +92,8 @@ const changeStatus = reactive({
         </div>
       </Transition>
     </td>
-    <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white"
-    >
-      {{ props.product.date }}
+    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
+      {{ props.product?.date }}
     </td>
   </tr>
 </template>

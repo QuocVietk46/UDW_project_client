@@ -1,4 +1,6 @@
 <script setup>
+import { useUserStore } from '@/stores/userStore';
+
 const listNav = [
   {
     name: 'Dashboard',
@@ -26,6 +28,11 @@ const listNav = [
     icon: 'fa-solid fa-image',
   },
 ];
+
+const handleLogout = () => {
+  const userStore = useUserStore();
+  userStore.logout();
+};
 </script>
 <template>
   <section class="bg-white py-4 select-none text-gray-900">
@@ -50,6 +57,7 @@ const listNav = [
       </div>
       <div>
         <button
+          @click="handleLogout"
           class="w-full p-2 text-center hover:bg-primary hover:scale-110 transition-all duration-250"
         >
           Đăng xuất

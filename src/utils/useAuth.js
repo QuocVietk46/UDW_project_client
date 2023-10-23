@@ -1,13 +1,9 @@
 import { useAlertStore } from '../stores/alertStore';
-import { useUserStore } from '../stores/userStore';
-import { useCartStore } from '../stores/cartStore';
 import { resetAllPiniaStores } from '../stores/Module/resetAllStores';
 import { postDataAPI } from '../utils/fetchData';
 
 export const useAuth = () => {
   const alertStore = useAlertStore();
-  const cartStore = useCartStore();
-  const userStore = useUserStore();
 
   const register = async (data) => {
     try {

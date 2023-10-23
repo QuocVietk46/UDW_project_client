@@ -3,35 +3,22 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { useSearchStore } from '../../stores/searchStore';
 import CardProduct from '../../components/product/CardProduct.vue';
-import { useProducts } from '../../hooks/useProducts';
+import { useProductsStore } from '@/stores/productsStore';
 
 const route = useRoute();
+const productsStore = useProductsStore();
+
 const isLoading = ref(false);
-const products = ref([]);
+const products = storeToRefs(productsStore).products;
 const total = ref(0);
 const page = ref(1);
-const search = storeToRefs(useSearchStore()).search;
-
-const { findProducts } = useProducts();
 
 const fetchData = async () => {
-  const { category } = route.query;
-  console.log('fetch Data');
   isLoading.value = true;
-  const res = await findProducts({
-    category,
-    search: search.value,
-    page: page.value,
+  await productsStore.fetchProducts({
+    ...route.query,
   });
-  if (!res) {
-    isLoading.value = false;
-    return;
-  }
-  page.value = res.page;
-  total.value = res.total;
-  products.value = res.products;
   isLoading.value = false;
 };
 
