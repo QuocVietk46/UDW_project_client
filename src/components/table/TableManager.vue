@@ -4,7 +4,7 @@ import TbodyRow from './TbodyRow.vue';
 const props = defineProps({
   products: {
     type: Array,
-    default: [{}],
+    default: [],
   },
 });
 

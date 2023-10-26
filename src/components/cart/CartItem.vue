@@ -1,6 +1,6 @@
 <script setup>
-import { reactive, defineProps } from 'vue';
-import { useCart } from '../../hooks/useCart';
+import { reactive } from 'vue';
+import { useCartStore } from '@/stores/cartStore';
 
 const props = defineProps({
   product: {
@@ -10,7 +10,8 @@ const props = defineProps({
 });
 
 const { product, quantity } = props.product;
-const { updateCart, removeProductFromCart } = useCart();
+const useCart = useCartStore();
+const { updateCart, removeProductFromCart } = useCart;
 const change = reactive({
   isDeleted: false,
   isChange: false,
@@ -36,7 +37,7 @@ const change = reactive({
     change.isChange = false;
   },
 });
-
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 </script>
 <template>
@@ -55,7 +56,7 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
       >
         <div class="flex flex-col items-center justify-center">
           <img
-            :src="'http://localhost:3000' + product.images[0].path"
+            :src="SERVER_URL + product.images[0].path"
             alt=""
             class="w-[110px] h-[140px] object-cover"
           />

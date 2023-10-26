@@ -6,27 +6,17 @@ export default {
 </script>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import CartItem from '../components/cart/CartItem.vue';
-import { useCart } from '../hooks/useCart';
+import { useCartStore } from '@/stores/cartStore';
 
-const { findCart } = useCart();
-const products = ref([]);
+const useCart = useCartStore();
+const products = storeToRefs(useCart).products;
 const isLoading = ref(false);
-const subTotal = ref(1111110);
-
-onMounted(async () => {
-  console.log('mounted');
-  isLoading.value = true;
-  const res = await findCart();
-  if (!res) {
-    isLoading.value = false;
-    return;
-  }
-  products.value = res.cart.products;
-  isLoading.value = false;
-});
+const subTotal = storeToRefs(useCart).subPrice;
+const price = storeToRefs(useCart).price;
 </script>
 <template>
   <div

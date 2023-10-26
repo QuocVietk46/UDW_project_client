@@ -3,25 +3,17 @@ import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const props = defineProps({
-  push: {
+  py: {
     type: String,
-    default: 'Products',
+    default: 'py-2',
   },
-  products: {
+  showBtn: {
     type: Boolean,
     default: true,
   },
-  orders: {
-    type: Boolean,
-    default: false,
-  },
-  users: {
-    type: Boolean,
-    default: false,
-  },
-  banner: {
-    type: Boolean,
-    default: false,
+  push: {
+    type: String,
+    default: 'Products',
   },
 });
 
@@ -30,20 +22,30 @@ const emit = defineEmits(['value']);
 const router = useRouter();
 const route = useRoute();
 
-const { search, ...query } = route.query;
+const { search, ...rest } = route.query;
 const searchText = ref(search || '');
 const isFocus = ref(false);
 
 const handleSubmit = async () => {
   if (!searchText.value) return;
+
   router.push({
     name: props.push,
-    query: { search: searchText.value, ...query },
+    query: {
+      ...(searchText.value && { search: searchText.value }),
+      ...rest,
+    },
   });
 };
 
 const handleDelete = () => {
   searchText.value = '';
+  router.push({
+    name: props.push,
+    query: {
+      ...rest,
+    },
+  });
 };
 
 watch(
@@ -56,7 +58,8 @@ watch(
 </script>
 <template>
   <div
-    class="w-full border px-2 py-1 rounded-3xl bg-white flex justify-between pointer-events-none focus-within:ring-2 focus-within:ring-gray-400 focus-within:ring-offset-2"
+    :class="py"
+    class="w-full border px-4 rounded-3xl bg-white flex justify-between pointer-events-none focus-within:ring-2 focus-within:ring-gray-400 focus-within:ring-offset-2"
   >
     <form @submit.prevent="handleSubmit" class="flex-grow flex">
       <input
@@ -65,16 +68,16 @@ watch(
         @blur="isFocus = false"
         class="outline-none text-black px-3 pointer-events-auto w-full h-full"
       />
-      <Transition>
-        <button
-          v-if="searchText"
-          @click="handleDelete"
-          class="pointer-events-auto opacity-50 hover:opacity-100 focus:outline-none"
-        >
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </Transition>
-      <button @click="handleSubmit">
+
+      <button
+        @click="handleDelete"
+        class="pointer-events-auto opacity-50 hover:opacity-100 focus:outline-none"
+        :class="searchText ? 'visible' : 'invisible'"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <button v-if="showBtn" @click="handleSubmit">
         <i
           class="fa-solid fa-magnifying-glass p-2 text-black pointer-events-auto hover:cursor-pointer"
         ></i>

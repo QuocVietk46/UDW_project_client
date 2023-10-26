@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import { useProducts } from '../utils/useProducts';
+import {
+  getDataAPI,
+  postDataMultipartAPI,
+  patchDataMultipartAPI,
+  deleteDataAPI,
+} from '@/utils/fetchData';
+import { useAlertStore } from './alertStore';
 
 export const useProductsStore = defineStore('products', () => {
   const products = ref([]);
@@ -9,67 +15,65 @@ export const useProductsStore = defineStore('products', () => {
   const page = ref(1);
   const total = ref(0);
 
-  const {
-    findProductById,
-    findProducts,
-    updateProduct,
-    deleteProduct,
-    createProduct,
-  } = useProducts();
+  const alertStore = useAlertStore();
 
   const fetchProducts = async (query) => {
     try {
-      const res = await findProducts(query);
-      products.value = res.products;
-      total.value = res.total;
-      page.value = res.page;
+      const res = await getDataAPI('products', query);
+      products.value = res.data.products;
+      total.value = res.data.total;
+      page.value = res.data.page;
     } catch (error) {
       console.error(error);
+      alertStore.setAlert({ message: 'Không thể lấy sản phẩm', type: 'error' });
     }
   };
 
   const fetchProductById = async (id) => {
     try {
-      const res = await findProductById(id);
-      product.value = res.product;
+      const res = await getDataAPI(`products/${id}`);
+      product.value = res.data.product;
     } catch (error) {
       console.error(error);
+      alertStore.setAlert({ message: 'Không thể lấy sản phẩm', type: 'error' });
     }
   };
 
   const addProduct = async (data) => {
     try {
-      const res = await createProduct(data);
+      const res = await postDataMultipartAPI('admin/products', data);
       console.log(res);
-      if (!res) {
-        throw new Error('Cant create product');
-      }
-      products.value = [{ ...res.newProduct }, ...products.value];
+      products.value = [{ ...res.data.newProduct }, ...products.value];
     } catch (error) {
       console.error(error);
+      alertStore.setAlert({
+        message: 'Không thể thêm sản phẩm',
+        type: 'error',
+      });
     }
   };
 
   const editProduct = async (id, data) => {
     try {
-      const res = await updateProduct(id, data);
-      if (!res) {
-        throw new Error('Cant update product');
-      }
+      const res = await patchDataMultipartAPI(`admin/products/${id}`, data);
       products.value = products.value.map((product) => {
-        if (product._id === res.newProduct._id) {
-          return res.newProduct;
+        if (product._id === res.data.newProduct._id) {
+          return res.data.newProduct;
         }
         return product;
       });
     } catch (error) {
       console.error(error);
+      alertStore.setAlert({
+        message: 'Không thể cập nhật sản phẩm',
+        type: 'error',
+      });
     }
   };
 
   const removeProduct = async (id) => {
     try {
-      const res = await deleteProduct(id);
+      await deleteDataAPI(`admin/products/${id}`);
       products.value = products.value.filter((product) => product._id !== id);
     } catch (error) {
       console.error(error);

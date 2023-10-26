@@ -42,8 +42,8 @@ const value = storeToRefs(useCartStore()).amount;
             SẢN PHẨM
           </h1>
         </div>
-        <div class="mx-10 w-full">
-          <SearchInput />
+        <div class="mx-10 w-full px-14">
+          <SearchInput py="py-1" />
         </div>
         <div class="flex items-center">
           <Bade :value="value" class="p-2">

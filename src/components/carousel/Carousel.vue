@@ -31,6 +31,7 @@ const props = defineProps({
 const emits = defineEmits(['deleteI']);
 
 const active = ref(0);
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 let interval = null;
 onMounted(() => {
@@ -81,7 +82,7 @@ const handleDelete = () => {
     <div class="w-full h-full overflow-hidden flex">
       <img
         v-for="(image, index) in images"
-        :src="image._id ? 'http://localhost:3000' + image.path : image.path"
+        :src="image._id ? SERVER_URL + image.path : image.path"
         :alt="image.filename"
         loading="lazy"
         class="w-full h-full object-cover block flex-shrink-0 flex-grow-0 transform transition-transform duration-500 ease-in-out"

@@ -1,13 +1,19 @@
 <script setup>
-import { defineProps, ref, reactive } from 'vue';
+import { defineProps, reactive } from 'vue';
+
+import { status } from '@/assets/data';
 import ViewStar from '../star/ViewStar.vue';
 import ModalProduct from '../modal/ModalProduct.vue';
+
 const props = defineProps({
   product: {
     type: Object,
     required: true,
   },
 });
+
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 const changeStatus = reactive({
   isChange: false,
   preStatus: props.product.status,
@@ -32,7 +38,7 @@ const changeStatus = reactive({
   <tr>
     <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
       <img
-        :src="'http://localhost:3000' + props.product.images[0]?.path"
+        :src="SERVER_URL + props.product.images[0]?.path"
         loading="lazy"
         class="max-w-[8rem]"
       />
@@ -67,10 +73,9 @@ const changeStatus = reactive({
         @change="changeStatus.handleChange"
         :value="changeStatus.status"
       >
-        <option value="draft">Nháp</option>
-        <option value="available">Có sẵn</option>
-        <option value="unavailable">Hết hàng</option>
-        <option value="stop">Ngừng</option>
+        <option v-for="item in status" :value="item.value">
+          {{ item.title }}
+        </option>
       </select>
       <Transition name="fade">
         <div

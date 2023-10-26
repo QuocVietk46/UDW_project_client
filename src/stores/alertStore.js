@@ -3,19 +3,21 @@ import { ref } from 'vue';
 
 export const useAlertStore = defineStore('alert', () => {
   const alert = ref('');
-  const loading = ref(false);
+  const type = ref('');
+  const invalidToken = ref(false);
 
-  const setLoading = (status) => {
-    loading.value = status;
+  const setInvalidToken = (status) => {
+    invalidToken.value = status;
   };
 
-  const setAlert = (value) => {
-    alert.value = value;
-    loading.value = false;
+  const setAlert = ({ message, type }) => {
+    alert.value = message;
+    type.value = type;
   };
 
   const deleteAlert = () => {
-    alert.value = null;
+    alert.value = '';
+    type.value = '';
   };
-  return { loading, alert, deleteAlert, setAlert, setLoading };
+  return { alert, type, setInvalidToken, deleteAlert, setAlert };
 });

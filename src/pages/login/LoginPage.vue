@@ -1,16 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { Form } from 'vee-validate';
-import { useRouter } from 'vue-router';
 
 import loginSchema from './validation.js';
 import TextInput from '@/components/inputs/TextInput.vue';
-import { useAlertStore } from '@/stores/alertStore';
 import { useUserStore } from '@/stores/userStore';
 
-const router = useRouter();
 const { login } = useUserStore();
-const alertStore = useAlertStore();
 
 const buttonSubmit = ref();
 

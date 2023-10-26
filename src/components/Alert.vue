@@ -3,6 +3,7 @@ import { useAlertStore } from '../stores/alertStore';
 import { onMounted } from 'vue';
 
 const alertStore = useAlertStore();
+
 let timeout = null;
 const handleClose = () => {
   if (timeout) {

@@ -27,6 +27,7 @@ const routes = [
         path: 'cart',
         name: 'Cart',
         component: () => import('../pages/CartPage.vue'),
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -48,6 +49,7 @@ const routes = [
   {
     path: '/admin',
     component: () => import('../layouts/adminLayout.vue'),
+    meta: { requiresAdmin: true },
     children: [
       {
         path: '',
@@ -75,16 +77,6 @@ const routes = [
         component: () => import('../pages/admin/ManagerBanners.vue'),
       },
     ],
-  },
-  {
-    path: '/carousel',
-    name: 'Carousel',
-    component: () => import('../components/carousel/Carousel.vue'),
-  },
-  {
-    path: '/modal',
-    name: 'Modal',
-    component: () => import('../components/modal/ModalProduct.vue'),
   },
 ];
 

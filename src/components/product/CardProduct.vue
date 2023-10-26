@@ -10,6 +10,7 @@ const props = defineProps({
 });
 
 const { addProductToCart } = useCartStore();
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 const handleAddCart = async () => {
   console.log('Add to cart', props.product._id);
@@ -20,7 +21,7 @@ const handleAddCart = async () => {
   <div class="flex flex-col shadow-2xl cursor-pointer select-none group">
     <div class="relative overflow-hidden">
       <img
-        :src="'http://localhost:3000' + props.product.images[0].path"
+        :src="SERVER_URL + props.product.images[0].path"
         class="w-[316px] h-[404px] object-cover"
       />
       <div v-if="props.product.sale" class="absolute top-4 left-0">

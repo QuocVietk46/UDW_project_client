@@ -4,14 +4,15 @@ import { Form } from 'vee-validate';
 import { useRouter } from 'vue-router';
 
 import registerSchema from './validation.js';
-import TextInput from '../../components/inputs/TextInput.vue';
-import { useAlertStore } from '../../stores/alertStore';
-import { useAuth } from '../../hooks/useAuth';
+import TextInput from '@/components/inputs/TextInput.vue';
+import { useAlertStore } from '@/stores/alertStore';
+import { useUserStore } from '@/stores/userStore';
 
-const { register } = useAuth();
+const { register } = useUserStore();
 const router = useRouter();
 const alertStore = useAlertStore();
 const disabledBtn = ref(false);
+
 const onInvalidSubmit = () => {
   disabledBtn.value = true;
   setTimeout(() => {

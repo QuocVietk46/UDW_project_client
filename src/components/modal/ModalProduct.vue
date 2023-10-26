@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import Carousel from '../carousel/Carousel.vue';
 import Modal from './Modal.vue';
-
+import { category, status } from '@/assets/data';
 import { useProductsStore } from '@/stores/productsStore';
 
 const props = defineProps({
@@ -31,7 +31,7 @@ const newProduct = ref({
   sale: undefined || props.product.sale,
   describe: '' || props.product.describe,
   quantity: undefined || props.product.quantity,
-  category: '' || props.product.category,
+  category: null || props.product.category,
   status: '' || props.product.status,
 });
 const images = ref([]);
@@ -103,6 +103,13 @@ const handleSubmit = async () => {
   isLoading.value = false;
   handleClose();
   return;
+};
+
+const handleDelete = async () => {
+  isLoading.value = true;
+  await productsStore.deleteProduct(props.product._id);
+  isLoading.value = false;
+  handleClose();
 };
 
 // handle modal
@@ -198,10 +205,9 @@ const handleOpen = () => {
             v-model="newProduct.category"
           >
             <option value="">Loại</option>
-            <option value="t-shirt">Áo tay ngắn</option>
-            <option value="short">Quần short</option>
-            <option value="jeans">Quần jean</option>
-            <option value="jacket">Áo khoác</option>
+            <option v-for="item in category" :value="item.value">
+              {{ item.title }}
+            </option>
           </select>
           <select
             class="p-1 border-2 bg-inherit"
@@ -209,10 +215,9 @@ const handleOpen = () => {
             v-model="newProduct.status"
           >
             <option value="">Trạng thái</option>
-            <option value="draft">Nháp</option>
-            <option value="unavailable">Không có sẵn</option>
-            <option value="available">có sẵn</option>
-            <option value="stop">Ngừng kinh doanh</option>
+            <option v-for="item in status" :value="item.value">
+              {{ item.title }}
+            </option>
           </select>
           <label
             for="images-input"
@@ -254,13 +259,21 @@ const handleOpen = () => {
             </button>
           </div>
           <div v-else>
-            <button
-              v-if="props.product.title"
-              @click="handleSubmit"
-              class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
-            >
-              Cập nhật
-            </button>
+            <div v-if="props.product.title" class="flex gap-4">
+              <button
+                v-if="props.product.status === 'draft'"
+                @click="handleDelete"
+                class="px-6 py-2 bg-red-400 hover:bg-red-500 hover:text-white hover:shadow-md"
+              >
+                Xoá
+              </button>
+              <button
+                @click="handleSubmit"
+                class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
+              >
+                Cập nhật
+              </button>
+            </div>
             <button
               v-else
               type="submit"
