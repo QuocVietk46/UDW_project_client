@@ -27,15 +27,21 @@ const handleLogout = async () => {
       class="invisible opacity-0 z-50 group-hover:visible group-hover:opacity-[1] absolute top-[100%] shadow-md bg-gray-300 text-black min-w-[15rem] translate-x-[-50%] rounded-sm custom-transition"
     >
       <div class="flex justify-between p-3">
-        <router-link to="/login" class="text-black">Đăng nhập</router-link>
-        <router-link to="/register" class="text-black">Đăng ký</router-link>
+        <router-link :to="{ name: 'Login' }" class="text-black"
+          >Đăng nhập</router-link
+        >
+        <router-link :to="{ name: 'Register' }" class="text-black"
+          >Đăng ký</router-link
+        >
       </div>
       <div class="bg-slate-100">
         <ul>
           <li>
-            <button class="hover:bg-slate-200 px-4 py-2 w-full text-left">
-              Thông tin tài khoản
-            </button>
+            <router-link :to="{ name: 'ProfileAccount' }">
+              <button class="hover:bg-slate-200 px-4 py-2 w-full text-left">
+                Thông tin tài khoản
+              </button>
+            </router-link>
           </li>
           <li>
             <button

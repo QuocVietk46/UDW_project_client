@@ -1,11 +1,10 @@
-import { defineStore } from 'pinia';
+import { defineStore, getActivePinia } from 'pinia';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAlertStore } from './alertStore';
 import { useCartStore } from './cartStore';
-import { useResetStore } from './resetStores';
-import { postDataAPI } from '@/utils/fetchData';
+import { postDataAPI, patchDataAPI } from '@/utils/fetchData';
 
 export const useUserStore = defineStore('user', () => {
   // State
@@ -18,14 +17,13 @@ export const useUserStore = defineStore('user', () => {
   // Declare other stores
   const alertStore = useAlertStore();
   const cartStore = useCartStore();
-  const resetStore = useResetStore();
 
   // Actions
   const register = async (userData) => {
     try {
-      const res = await postDataAPI('register', userData);
+      const res = await postDataAPI({ url: 'register', data: userData });
       setUser(res.data.user, res.data.accessToken);
-      cartStore.setCart(res.data.cart);
+      cartStore.getCart();
       router.push({ name: 'Home' });
     } catch (err) {
       alertStore.setAlert({
@@ -38,11 +36,12 @@ export const useUserStore = defineStore('user', () => {
 
   const login = async (userData) => {
     try {
-      const res = await postDataAPI('login', userData);
+      const res = await postDataAPI({ url: 'login', data: userData });
       console.log({ res });
 
-      setUser(res.data.user, res.data.token);
-      cartStore.setCart(res.data.cart);
+      setUser(res.data.user, res.data.accessToken);
+
+      await cartStore.getCart();
 
       if (res.data.user.role === 'admin') router.push('/admin');
       else router.push({ name: 'Home' });
@@ -54,8 +53,9 @@ export const useUserStore = defineStore('user', () => {
 
   const logout = async () => {
     try {
-      resetStore.all();
-      await postDataAPI('logout');
+      await postDataAPI({ url: 'logout', token: token.value });
+      localStorage.clear();
+      getActivePinia()._s.forEach((store) => store.$dispose());
       router.push({ name: 'Login' });
     } catch (error) {
       console.log({ errorLogout: error });
@@ -69,11 +69,56 @@ export const useUserStore = defineStore('user', () => {
     token.value = newToken;
   };
 
+  const updateUser = async (data) => {
+    try {
+      if (data.phone) user.value.phone = data.phone;
+      if (data.address)
+        user.value.address = [...user.value.address, data.address];
+      if (data.addressDelete)
+        user.value.address = user.value.address.filter(
+          (item) => item !== data.addressDelete
+        );
+
+      await patchDataAPI({
+        url: `profile/${userId.value}`,
+        data,
+        token: token.value,
+      });
+    } catch (error) {
+      console.error({ errorUpdateUser: error });
+      alertStore.setAlert({
+        message: 'Không thể cập nhật thông tin người dùng',
+        type: 'error',
+      });
+    }
+  };
+
+  const refreshToken = async () => {
+    try {
+      const res = await postDataAPI({ url: 'refresh_token' });
+      token.value = res.data.accessToken;
+      return res.data.accessToken;
+    } catch (error) {
+      console.error({ errorRefreshToken: error });
+    }
+  };
+
   const isAuthValid = () => {
     return token.value.length > 0 ? true : false;
   };
 
   const isAdmin = () => user.value.role === 'admin';
 
-  return { user, userId, token, isAuthValid, isAdmin, register, login, logout };
+  return {
+    user,
+    userId,
+    token,
+    refreshToken,
+    isAuthValid,
+    isAdmin,
+    register,
+    login,
+    logout,
+    updateUser,
+  };
 });

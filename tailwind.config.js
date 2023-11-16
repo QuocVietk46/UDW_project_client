@@ -17,6 +17,10 @@ export default {
       margin: {
         sideBar: '250px',
       },
+      padding: {
+        'custom-1': '32px',
+        'custom-2': '64px',
+      },
       width: {
         sideBar: '250px',
       },

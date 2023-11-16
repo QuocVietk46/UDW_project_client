@@ -1,5 +1,4 @@
 <script setup>
-import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -12,13 +11,12 @@ const route = useRoute();
 const productsStore = useProductsStore();
 
 const isLoading = ref(false);
-const products = storeToRefs(productsStore).products;
-const total = storeToRefs(productsStore).total;
-const page = storeToRefs(productsStore).page.value;
+const isShowModal = ref(false);
 
 const fetchData = async () => {
   isLoading.value = true;
   await productsStore.fetchProducts({
+    status: 'all',
     ...route.query,
   });
   isLoading.value = false;
@@ -40,12 +38,10 @@ onMounted(async () => {
       <div
         class="py-2 px-4 bg-white rounded-3xl hover:shadow-md hover:bg-slate-200 transition-colors duration-200"
       >
-        <ModalProduct> Thêm </ModalProduct>
+        <ModalProduct title="Thêm"></ModalProduct>
       </div>
       <Filter />
     </div>
-    <div class="min-h-screen">
-      <TableManager :products="products"></TableManager>
-    </div>
+    <TableManager></TableManager>
   </div>
 </template>

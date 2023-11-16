@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { onActivated, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import CardProduct from '../../components/product/CardProduct.vue';
@@ -19,7 +19,7 @@ const fetchData = async () => {
   });
 };
 
-onMounted(async () => {
+onActivated(async () => {
   watch(
     () => route.fullPath,
     () => {
@@ -30,8 +30,8 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div v-if="products">
-    <div class="px-custom grid grid-cols-4 gap-4 py-5">
+  <div v-if="products" class="bg-primary">
+    <div class="px-40 grid grid-cols-4 gap-4 py-5">
       <CardProduct
         v-if="products"
         v-for="product in products"

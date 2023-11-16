@@ -8,6 +8,7 @@ import {
   patchDataAPI,
 } from '@/utils/fetchData';
 import { useAlertStore } from './alertStore';
+import { useUserStore } from './userStore';
 
 export const useCartStore = defineStore('cart', () => {
   // State
@@ -18,18 +19,39 @@ export const useCartStore = defineStore('cart', () => {
   const subPrice = ref(0);
 
   const alertStore = useAlertStore();
+  const userStore = useUserStore();
 
-  const setCart = async () => {
+  const calculatePrice = () => {
+    price.value = 0;
+    subPrice.value = 0;
+    amount.value = 0;
+    products.value.length > 0 &&
+      products.value.forEach((item) => {
+        price.value += item.product.price * item.quantity;
+
+        const discount =
+          item.product.price * (item.product.sale / 100) * item.quantity;
+        subPrice.value += item.product.price * item.quantity - discount;
+
+        amount.value += item.quantity;
+      });
+    console.log({
+      price: price.value,
+      subPrice: subPrice.value,
+      amount: amount.value,
+    });
+  };
+
+  const getCart = async () => {
     try {
-      const res = await getDataAPI('cart');
-
-      products.value = res.data.cart.products;
-      products.value.length > 0 &&
-        products.value.forEach((product) => {
-          price.value += product.price * product.quantity;
-          subPrice.value += price.value - product.sale * product.quantity;
-          amount.value += product.quantity;
-        });
+      console.log('getCart');
+      const res = await getDataAPI({ url: 'cart', token: userStore.token });
+      console.log({ resCart: res });
+      if (!res.data.cart) {
+        return;
+      }
+      products.value = [...res.data.cart.products];
+      products.value.length > 0 && calculatePrice();
     } catch (error) {
       console.log(error);
       alertStore.setAlert({
@@ -41,9 +63,14 @@ export const useCartStore = defineStore('cart', () => {
 
   const updateCart = async ({ productId, quantity = 1 }) => {
     try {
-      const res = await patchDataAPI('cart', { productId, quantity });
+      const res = await patchDataAPI({
+        url: 'cart',
+        data: { productId, quantity },
+        token: userStore.token,
+      });
       // change product is updated in cart
-      products.value = [...res.data.newCart];
+      products.value = [...res.data.newCart.products];
+      calculatePrice();
     } catch (error) {
       console.error(error);
       alertStore.setAlert({
@@ -55,21 +82,38 @@ export const useCartStore = defineStore('cart', () => {
 
   const addProductToCart = async ({ productId, quantity = 1 }) => {
     try {
-      const res = await postDataAPI('cart', { productId, quantity });
-      products.value = [...res.data.newCart];
+      const res = await postDataAPI({
+        url: 'cart',
+        data: { productId, quantity },
+        token: userStore.token,
+      });
+      console.log(res);
+      products.value = [...res.data.newCart.products];
+      calculatePrice();
     } catch (error) {
       console.error(error);
-      alertStore.setAlert({
-        message: 'Không thể thêm sản phẩm vào giỏ hàng',
-        type: 'error',
-      });
+      error.response.data.message === 'Invalid Token' &&
+        alertStore.setAlert({
+          message: 'Không thể thêm sản phẩm vào giỏ hàng',
+          type: 'error',
+          isInvalidToken: true,
+        });
     }
   };
 
   const removeProductFromCart = async ({ productId }) => {
     try {
-      const res = await deleteDataAPI(`cart/${productId}`);
-      products.value = [...res.data.newCart];
+      const res = await deleteDataAPI({
+        url: `cart/${productId}`,
+        token: userStore.token,
+      });
+      console.log(res);
+      if (res.data.newCart.products.length === 0) {
+        products.value = [];
+      } else {
+        products.value = [...res.data.newCart.products];
+      }
+      calculatePrice();
     } catch (error) {
       console.error(error);
       alertStore.setAlert({
@@ -81,8 +125,9 @@ export const useCartStore = defineStore('cart', () => {
 
   const cleanCart = async () => {
     try {
-      await deleteDataAPI('cart');
+      await deleteDataAPI({ url: 'cart', token: userStore.token });
       products.value = [];
+      calculatePrice();
     } catch (error) {
       console.error(error);
       alertStore.setAlert({
@@ -97,7 +142,7 @@ export const useCartStore = defineStore('cart', () => {
     amount,
     price,
     subPrice,
-    setCart,
+    getCart,
     updateCart,
     addProductToCart,
     removeProductFromCart,

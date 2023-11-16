@@ -3,7 +3,7 @@
 <template>
   <footer>
     <div
-      class="grid grid-cols-4 px-custom py-8 bg-neutral-300 select-none gap-x-10"
+      class="grid grid-cols-4 px-40 py-8 bg-neutral-300 select-none gap-x-10"
     >
       <section>
         <h2 class="text-lg font-bold footer-title">Shopping Clothing</h2>

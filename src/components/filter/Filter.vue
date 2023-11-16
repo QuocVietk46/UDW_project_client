@@ -47,7 +47,7 @@ const handleSubmit = async (values) => {
       </div>
       <div class="px-1">
         <select name="status" class="cursor-pointer focus:outline-none">
-          <option value="">Trạng thái</option>
+          <option value="all">Trạng thái</option>
           <option v-for="item in status" :value="item.value">
             {{ item.title }}
           </option>
@@ -71,7 +71,7 @@ const handleSubmit = async (values) => {
     <div>
       <button
         type="submit"
-        class="py-2 px-4 bg-white rounded-3xl hover:shadow-md hover:bg-slate-200 transition-colors duration-200"
+        class="py-2 px-4 font-medium bg-white rounded-3xl hover:shadow-md hover:bg-slate-200 transition-colors duration-200"
       >
         Tìm
       </button>

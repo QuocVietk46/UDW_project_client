@@ -1,13 +1,14 @@
 <script setup>
-import { useAlertStore } from './stores/alertStore';
-import Alert from './components/Alert.vue';
+import Alert from '@/components/Alert.vue';
+import { useAlertStore } from '@/stores/alertStore';
 
 const alertStore = useAlertStore();
 </script>
-
 <template>
   <div>
-    <Alert v-if="alertStore.alert"></Alert>
+    <Transition name="fade">
+      <Alert v-if="alertStore.alert"></Alert>
+    </Transition>
     <router-view> </router-view>
   </div>
 </template>

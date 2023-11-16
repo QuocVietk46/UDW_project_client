@@ -1,16 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { Form } from 'vee-validate';
-import { useRouter } from 'vue-router';
 
 import registerSchema from './validation.js';
 import TextInput from '@/components/inputs/TextInput.vue';
-import { useAlertStore } from '@/stores/alertStore';
 import { useUserStore } from '@/stores/userStore';
 
 const { register } = useUserStore();
-const router = useRouter();
-const alertStore = useAlertStore();
 const disabledBtn = ref(false);
 
 const onInvalidSubmit = () => {
@@ -21,19 +17,12 @@ const onInvalidSubmit = () => {
 };
 
 const onSubmit = async (values) => {
-  alertStore.setLoading(true);
   const data = {
     full_name: values.firstName + ' ' + values.lastName,
     email: values.email,
     password: values.password,
   };
-  const res = await register(data);
-  if (res.status !== 201) {
-    alertStore.setLoading(false);
-    return;
-  }
-  alertStore.setLoading(false);
-  router.push({ name: 'Login' });
+  await register(data);
 };
 </script>
 

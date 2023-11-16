@@ -54,16 +54,45 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         class="flex border-b-[1px] border-[#eee] py-4"
         :class="{ 'relative z-[60]': change.isChange }"
       >
-        <div class="flex flex-col items-center justify-center">
+        <div class="relative flex flex-col items-center justify-center">
           <img
             :src="SERVER_URL + product.images[0].path"
             alt=""
             class="w-[110px] h-[140px] object-cover"
           />
+          <span
+            v-if="product.sale"
+            class="absolute top-2 left-0 bg-white px-2 py-1 opacity-80"
+          >
+            {{ product.sale }}%
+          </span>
         </div>
         <div class="flex-grow pl-5">
           <p class="text-xl font-bold leading-none text-[#d01345]">
-            {{ product.price }} VND
+            <span class="pr-2" v-if="product.sale > 0">
+              {{
+                (
+                  product.price -
+                  product.price * (product.sale / 100)
+                ).toLocaleString('it-IT', {
+                  style: 'currency',
+                  currency: 'VND',
+                })
+              }}
+            </span>
+            <span
+              :class="
+                product.sale > 0 &&
+                'relative text-base opacity-80 before:absolute before:opacity-80 before:h-[2px] before:bg-black before:top-1/2 before:left-0 before:w-full'
+              "
+            >
+              {{
+                product.price.toLocaleString('it-IT', {
+                  style: 'currency',
+                  currency: 'VND',
+                })
+              }}
+            </span>
           </p>
           <h1 class="text-2xl font-bold py-2">{{ product.title }}</h1>
           <div class="flex items-center">

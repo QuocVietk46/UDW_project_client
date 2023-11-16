@@ -15,9 +15,13 @@ const props = defineProps({
       price: undefined,
       sale: undefined,
       description: '',
-      type: '',
+      category: '',
       status: '',
     },
+  },
+  title: {
+    type: String,
+    default: '',
   },
 });
 
@@ -100,6 +104,17 @@ const handleSubmit = async () => {
     await productsStore.addProduct(formData);
   }
   deleteI.value = [];
+  newProduct.value = {
+    _id: '',
+    images: [],
+    title: '',
+    price: undefined,
+    sale: undefined,
+    describe: '',
+    quantity: undefined,
+    category: null,
+    status: '',
+  };
   isLoading.value = false;
   handleClose();
   return;
@@ -107,7 +122,7 @@ const handleSubmit = async () => {
 
 const handleDelete = async () => {
   isLoading.value = true;
-  await productsStore.deleteProduct(props.product._id);
+  await productsStore.removeProduct(props.product._id);
   isLoading.value = false;
   handleClose();
 };
@@ -121,170 +136,166 @@ const handleOpen = () => {
 };
 </script>
 <template>
+  <button @click="handleOpen" class="font-medium">
+    {{ title || product.title }}
+  </button>
   <Modal :open="isOpen" @close="handleClose" @open="handleOpen">
-    <template #button> <slot></slot> </template>
-    <template #content>
-      <div class="flex gap-2 p-4">
-        <div
-          v-if="images.length > 0 || props.product.images.length > 0"
-          class="w-[24rem] h-[34rem]"
+    <div class="flex gap-2 p-4">
+      <div
+        v-if="images.length > 0 || props.product.images.length > 0"
+        class="w-[24rem] h-[34rem]"
+      >
+        <Carousel
+          :images="[...props.product.images, ...images]"
+          @deleteI="(image) => handleDeleteImage(image)"
+          edit
+        />
+      </div>
+      <div
+        v-else
+        class="w-[24rem] h-[34rem] border-dashed border-black border-2 flex justify-center items-center"
+      >
+        <label
+          for="images-input"
+          class="cursor-pointer w-full h-full flex justify-center items-center hover:bg-slate-100"
+          >Thêm hình ảnh</label
         >
-          <Carousel
-            :images="[...props.product.images, ...images]"
-            @deleteI="(image) => handleDeleteImage(image)"
-            edit
-          />
-        </div>
+      </div>
+      <div class="flex flex-col gap-5 min-w-[25rem]">
+        <input
+          @change="handleInputImages"
+          type="file"
+          name="images"
+          id="images-input"
+          class="hidden"
+          multiple
+        />
+        <input
+          type="text"
+          name="title"
+          v-model="newProduct.title"
+          class="p-1 border-2 bg-inherit"
+          placeholder="Tiêu đề sản phẩm"
+        />
         <div
-          v-else
-          class="w-[24rem] h-[34rem] border-dashed border-black border-2 flex justify-center items-center"
+          class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['VND'] after:text-gray-400"
         >
-          <label
-            for="images-input"
-            class="cursor-pointer w-full h-full flex justify-center items-center hover:bg-slate-100"
-            >Thêm hình ảnh</label
-          >
-        </div>
-        <div class="flex flex-col gap-5 min-w-[25rem]">
-          <input
-            @change="handleInputImages"
-            type="file"
-            name="images"
-            id="images-input"
-            class="hidden"
-            multiple
-          />
-          <input
-            type="text"
-            name="title"
-            v-model="newProduct.title"
-            class="p-1 border-2 bg-inherit"
-            placeholder="Tiêu đề sản phẩm"
-          />
-          <div
-            class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['VND'] after:text-gray-400"
-          >
-            <input
-              type="number"
-              name="price"
-              v-model="newProduct.price"
-              class="p-1 border-2 bg-inherit w-full"
-              placeholder="Giá sản phẩm"
-            />
-          </div>
-          <div
-            class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['%'] after:text-gray-400"
-          >
-            <input
-              type="number"
-              name="sale"
-              v-model="newProduct.sale"
-              class="p-1 border-2 bg-inherit w-full"
-              placeholder="Giảm giá (nếu có)"
-            />
-          </div>
           <input
             type="number"
-            name="quantity"
-            v-model="newProduct.quantity"
+            name="price"
+            v-model="newProduct.price"
             class="p-1 border-2 bg-inherit w-full"
-            placeholder="Số lượng sản phẩm"
+            placeholder="Giá sản phẩm"
           />
-          <textarea
-            cols="30"
-            rows="6"
-            type="text"
-            name="describe"
-            v-model="newProduct.describe"
-            class="p-1 border-2 bg-inherit"
-            placeholder="Mô tả sản phẩm"
-          ></textarea>
-          <select
-            class="p-1 border-2 bg-inherit"
-            name="category"
-            v-model="newProduct.category"
-          >
-            <option value="">Loại</option>
-            <option v-for="item in category" :value="item.value">
-              {{ item.title }}
-            </option>
-          </select>
-          <select
-            class="p-1 border-2 bg-inherit"
-            name="status"
-            v-model="newProduct.status"
-          >
-            <option value="">Trạng thái</option>
-            <option v-for="item in status" :value="item.value">
-              {{ item.title }}
-            </option>
-          </select>
-          <label
-            for="images-input"
-            class="px-4 py-2 text-center cursor-pointer bg-slate-200 hover:shadow-md hover:bg-slate-300"
-          >
-            Thêm ảnh
-          </label>
         </div>
-      </div>
-      <div class="flex gap-4 px-4 pb-4 justify-end">
-        <button
-          @click="handleClose"
-          class="px-6 py-2 hover:bg-red-500 hover:shadow-md hover:text-white"
+        <div
+          class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['%'] after:text-gray-400"
         >
-          Đóng
-        </button>
-        <div>
-          <div v-if="isLoading">
+          <input
+            type="number"
+            name="sale"
+            v-model="newProduct.sale"
+            class="p-1 border-2 bg-inherit w-full"
+            placeholder="Giảm giá (nếu có)"
+          />
+        </div>
+        <input
+          type="number"
+          name="quantity"
+          v-model="newProduct.quantity"
+          class="p-1 border-2 bg-inherit w-full"
+          placeholder="Số lượng sản phẩm"
+        />
+        <textarea
+          cols="30"
+          rows="6"
+          type="text"
+          name="describe"
+          v-model="newProduct.describe"
+          class="p-1 border-2 bg-inherit"
+          placeholder="Mô tả sản phẩm"
+        ></textarea>
+        <select
+          class="p-1 border-2 bg-inherit"
+          name="category"
+          v-model="newProduct.category"
+        >
+          <option value="">Loại</option>
+          <option v-for="item in category" :value="item.value">
+            {{ item.title }}
+          </option>
+        </select>
+        <select
+          class="p-1 border-2 bg-inherit"
+          name="status"
+          v-model="newProduct.status"
+        >
+          <option value="">Trạng thái</option>
+          <option v-for="item in status" :value="item.value">
+            {{ item.title }}
+          </option>
+        </select>
+        <label
+          for="images-input"
+          class="px-4 py-2 text-center cursor-pointer bg-slate-200 hover:shadow-md hover:bg-slate-300"
+        >
+          Thêm ảnh
+        </label>
+      </div>
+    </div>
+    <div class="flex gap-4 px-4 pb-4 justify-end">
+      <button
+        @click="handleClose"
+        class="px-6 py-2 hover:bg-red-500 hover:shadow-md hover:text-white"
+      >
+        Đóng
+      </button>
+      <div>
+        <div v-if="isLoading">
+          <button type="button" class="px-6 py-2 bg-fuchsia-200 flex" disabled>
+            <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                fill="none"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Đang xử lý
+          </button>
+        </div>
+        <div v-else>
+          <div v-if="props.product.title" class="flex gap-4">
             <button
-              type="button"
-              class="px-6 py-2 bg-fuchsia-200 flex"
-              disabled
+              v-if="props.product.status === 'draft'"
+              @click="handleDelete"
+              class="px-6 py-2 bg-red-400 hover:bg-red-500 hover:text-white hover:shadow-md"
             >
-              <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  fill="none"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Đang xử lý
+              Xoá
             </button>
-          </div>
-          <div v-else>
-            <div v-if="props.product.title" class="flex gap-4">
-              <button
-                v-if="props.product.status === 'draft'"
-                @click="handleDelete"
-                class="px-6 py-2 bg-red-400 hover:bg-red-500 hover:text-white hover:shadow-md"
-              >
-                Xoá
-              </button>
-              <button
-                @click="handleSubmit"
-                class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
-              >
-                Cập nhật
-              </button>
-            </div>
             <button
-              v-else
-              type="submit"
               @click="handleSubmit"
               class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
             >
-              Thêm
+              Cập nhật
             </button>
           </div>
+          <button
+            v-else
+            type="submit"
+            @click="handleSubmit"
+            class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
+          >
+            Thêm
+          </button>
         </div>
       </div>
-    </template>
+    </div>
   </Modal>
 </template>

@@ -10,7 +10,6 @@ const props = defineProps({
 <template>
   <i :data-star="props.star" class="text-3xl not-italic"></i>
 </template>
-
 <style scoped>
 [data-star] {
   text-align: left;

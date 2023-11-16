@@ -15,14 +15,34 @@ const listNav = [
     to: 'Products',
   },
   {
-    title: 'Quần jean',
+    title: 'Áo sơ mi',
     to: 'Products',
-    query: { category: 'jean' },
+    query: { category: 'shirts' },
   },
   {
-    title: 'Áo T-shirt',
+    title: 'Áo thun',
     to: 'Products',
     query: { category: 't-shirt' },
+  },
+  {
+    title: 'Áo short',
+    to: 'Products',
+    query: { category: 'short' },
+  },
+  {
+    title: 'Quần dài',
+    to: 'Products',
+    query: { category: 'pant' },
+  },
+  {
+    title: 'Quần jean',
+    to: 'Products',
+    query: { category: 'jeans' },
+  },
+  {
+    title: 'Áo khoác',
+    to: 'Products',
+    query: { category: 'jacket' },
   },
 ];
 
@@ -32,7 +52,7 @@ const value = storeToRefs(useCartStore()).amount;
 
 <template>
   <header>
-    <div class="px-custom bg-secondary text-white select-none">
+    <div class="px-40 bg-secondary text-white select-none">
       <div class="flex justify-between items-center">
         <div class="flex">
           <router-link :to="{ name: 'Home' }">
@@ -55,9 +75,9 @@ const value = storeToRefs(useCartStore()).amount;
         </div>
       </div>
     </div>
-    <div class="px-custom bg-[#525050] text-white select-none">
+    <div class="px-40 bg-[#525050] text-white select-none">
       <ul class="flex">
-        <li v-for="nav in listNav">
+        <li v-for="nav in listNav" class="uppercase">
           <router-link
             :to="{ name: nav.to, query: { ...nav.query, search } }"
             class="btn-nav"

@@ -1,7 +1,7 @@
 import { getActivePinia } from 'pinia';
 
 export function useResetStore() {
-  localStorage.clear();
+  // localStorage.clear();
   const pinia = getActivePinia();
 
   if (!pinia) {

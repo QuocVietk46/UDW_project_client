@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, toRef, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const props = defineProps({
@@ -27,7 +27,8 @@ const searchText = ref(search || '');
 const isFocus = ref(false);
 
 const handleSubmit = async () => {
-  if (!searchText.value) return;
+  console.log(searchText.value);
+  if (!searchText.value || search) return;
 
   router.push({
     name: props.push,
@@ -57,6 +58,7 @@ watch(
 );
 </script>
 <template>
+  {{ console.log(searchText) }}
   <div
     :class="py"
     class="w-full border px-4 rounded-3xl bg-white flex justify-between pointer-events-none focus-within:ring-2 focus-within:ring-gray-400 focus-within:ring-offset-2"
@@ -77,7 +79,7 @@ watch(
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <button v-if="showBtn" @click="handleSubmit">
+      <button type="submit" v-if="showBtn">
         <i
           class="fa-solid fa-magnifying-glass p-2 text-black pointer-events-auto hover:cursor-pointer"
         ></i>

@@ -14,6 +14,11 @@ const routes = [
         component: () => import('../pages/AboutPage.vue'),
       },
       {
+        path: 'thanks',
+        name: 'Thanks',
+        component: () => import('../pages/ThanksPage.vue'),
+      },
+      {
         path: 'products',
         name: 'Products',
         component: () => import('../pages/products/ProductsPage.vue'),
@@ -28,6 +33,34 @@ const routes = [
         name: 'Cart',
         component: () => import('../pages/CartPage.vue'),
         meta: { requiresAuth: true },
+      },
+      {
+        path: 'checkout',
+        name: 'Checkout',
+        component: () => import('@/pages/CheckoutPage.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/order/payment_vnpay_return',
+        name: 'PaymentReturn',
+        component: () => import('@/pages/PaymentReturn.vue'),
+      },
+      {
+        path: 'profile',
+        component: () => import('@/pages/profilePage.vue'),
+        meta: { requiresAuth: true },
+        children: [
+          {
+            path: '',
+            name: 'ProfileAccount',
+            component: () => import('@/pages/profile/ProfileAccount.vue'),
+          },
+          {
+            path: 'order',
+            name: 'ProfileOrder',
+            component: () => import('@/pages/profile/ProfileOrder.vue'),
+          },
+        ],
       },
     ],
   },

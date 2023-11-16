@@ -9,17 +9,17 @@ const orders = storeToRefs(useOrder).orders;
 const active = ref('all');
 
 watch(active, async () => {
-  await useOrder.getOrdersAdmin(active.value);
+  await useOrder.getOrders(active.value);
 });
 
 onMounted(async () => {
-  await useOrder.getOrdersAdmin();
+  await useOrder.getOrders();
 });
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 </script>
 <template>
-  <div class="space-y-4 bg-primary min-h-[100vh] p-4">
+  <div class="space-y-2">
     <nav class="bg-white select-none">
       <ul class="flex">
         <li
@@ -81,20 +81,19 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
           <div>x{{ item.quantity }}</div>
         </section>
         <section class="p-3 space-y-2">
-          <div>
-            <span class="font-medium">Tổng tiền:</span>
-            <span class="text-[#d01345] font-medium">
-              {{
-                order.price.toLocaleString('it-IT', {
-                  style: 'currency',
-                  currency: 'VND',
-                })
-              }}
-            </span>
-          </div>
+          <div class="flex justify-between items-center">
+            <div class="space-x-2">
+              <span class="font-medium">Tổng tiền:</span>
+              <span class="text-[#d01345] font-medium">
+                {{
+                  order.price.toLocaleString('it-IT', {
+                    style: 'currency',
+                    currency: 'VND',
+                  })
+                }}
+              </span>
+            </div>
 
-          <div>
-            <span class="font-medium">Ngày đặt hàng:</span>
             <span>
               {{
                 new Date(order.order_date).toLocaleString('vi-VN', {
@@ -105,22 +104,6 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
                 })
               }}
             </span>
-          </div>
-          <div>
-            <span class="font-medium">Địa chỉ:</span>
-            <span>{{ order.address }}</span>
-          </div>
-          <div>
-            <span class="font-medium">Số điện thoại:</span>
-            <span>{{ order.phone }}</span>
-          </div>
-          <div>
-            <span class="font-medium">Phương thức thanh toán:</span>
-            <span>{{
-              order.payment === 'transfer'
-                ? 'Thanh toán khi nhận hàng'
-                : 'Thanh toán qua VNPay'
-            }}</span>
           </div>
           <div class="flex justify-end">
             <span class="font-medium">
@@ -146,14 +129,15 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
             >
               Huỷ
             </button>
+
             <button
-              v-if="order.status === 'pending'"
+              v-if="order.status === 'shipping'"
               class="text-white font-medium bg-black px-2 py-1 hover:bg-gray-500"
               @click="
-                async () => await useOrder.updateOrder(order._id, 'shipping')
+                async () => await useOrder.updateOrder(order._id, 'delivered')
               "
             >
-              Xác nhận
+              Đã nhận hàng
             </button>
           </div>
         </section>

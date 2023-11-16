@@ -1,9 +1,7 @@
 <script setup>
-import { defineProps, reactive } from 'vue';
-
-import { status } from '@/assets/data';
-import ViewStar from '../star/ViewStar.vue';
-import ModalProduct from '../modal/ModalProduct.vue';
+import { category, status } from "@/assets/data";
+import ViewStar from "../star/ViewStar.vue";
+import ModalProduct from "../modal/ModalProduct.vue";
 
 const props = defineProps({
   product: {
@@ -13,92 +11,70 @@ const props = defineProps({
 });
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
-const changeStatus = reactive({
-  isChange: false,
-  preStatus: props.product.status,
-  status: props.product.status,
-  handleChange: (e) => {
-    changeStatus.isChange = true;
-    changeStatus.preStatus = changeStatus.status;
-    changeStatus.status = e.target.value;
-  },
-
-  handleCancel: () => {
-    changeStatus.status = changeStatus.preStatus;
-    changeStatus.isChange = false;
-  },
-
-  handleConfirm: () => {
-    changeStatus.isChange = false;
-  },
-});
 </script>
 <template>
   <tr>
-    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
+    <td
+      class="relative whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900"
+    >
       <img
-        :src="SERVER_URL + props.product.images[0]?.path"
+        :src="SERVER_URL + product.images[0]?.path"
         loading="lazy"
         class="max-w-[8rem]"
       />
+      <span
+        v-if="product.sale"
+        class="absolute left-6 top-7 bg-white px-2 py-1 opacity-80"
+      >
+        {{ product.sale }}%
+      </span>
     </td>
-    <td class="py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap">
+    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">
       <ModalProduct :product="product">
-        {{ props.product?.title }}
+        {{ product?.title }}
       </ModalProduct>
     </td>
-    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
-      {{ props.product?.category }}
+    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+      {{ category.find((item) => item.value === product.category).title }}
     </td>
     <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center"
+      class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-gray-900"
     >
-      {{ props.product?.quantity }}
+      {{ product?.quantity }}
     </td>
-    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
-      <ViewStar :star="props.product?.rate"></ViewStar>
+    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+      <ViewStar :star="product?.rate"></ViewStar>
     </td>
     <td
-      class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center"
+      class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-gray-900"
     >
-      {{ props.product?.price }}
+      {{
+        product.price.toLocaleString("it-IT", {
+          style: "currency",
+          currency: "VND",
+        })
+      }}
     </td>
     <td
-      class="relative py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap text-center"
+      class="whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-gray-900"
     >
-      <select
-        class="p-2 group-hover:bg-gray-100 focus:outline-none"
-        name="status"
-        @change="changeStatus.handleChange"
-        :value="changeStatus.status"
-      >
-        <option v-for="item in status" :value="item.value">
-          {{ item.title }}
-        </option>
-      </select>
-      <Transition name="fade">
-        <div
-          v-if="changeStatus.isChange"
-          class="absolute bottom-0 left-1/2 -translate-x-1/2 mb-6 w-full flex justify-center gap-1"
-        >
-          <button
-            class="p-2 rounded-xl bg-gray-200 hover:bg-gray-300"
-            @click="changeStatus.handleCancel"
-          >
-            Huỷ
-          </button>
-          <button
-            class="p-1 rounded-xl bg-gray-200 hover:bg-yellow-200"
-            @click="changeStatus.handleConfirm"
-          >
-            Xác nhận
-          </button>
-        </div>
-      </Transition>
+      {{
+        (product.price - (product.sale / 100) * product.price).toLocaleString(
+          "it-IT",
+          {
+            style: "currency",
+            currency: "VND",
+          },
+        )
+      }}
     </td>
-    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap">
-      {{ props.product?.date }}
+    <td
+      class="relative whitespace-nowrap px-6 py-4 text-center text-sm font-medium text-gray-900"
+    >
+      {{ status.find((item) => item.value === product.status).title }}
+    </td>
+    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+      {{ new Date(product.createdAt).toLocaleDateString("vi-VN") }}
     </td>
   </tr>
 </template>

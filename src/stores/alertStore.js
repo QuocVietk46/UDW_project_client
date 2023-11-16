@@ -10,14 +10,33 @@ export const useAlertStore = defineStore('alert', () => {
     invalidToken.value = status;
   };
 
-  const setAlert = ({ message, type }) => {
+  const setAlert = ({
+    message = '',
+    typeAlert = 'error',
+    isInvalidToken = false,
+  }) => {
     alert.value = message;
-    type.value = type;
+    type.value = typeAlert;
+    invalidToken.value = isInvalidToken;
+  };
+
+  const resetAlert = () => {
+    alert.value = '';
+    type.value = '';
+    invalidToken.value = false;
   };
 
   const deleteAlert = () => {
     alert.value = '';
     type.value = '';
   };
-  return { alert, type, setInvalidToken, deleteAlert, setAlert };
+  return {
+    alert,
+    type,
+    invalidToken,
+    resetAlert,
+    setInvalidToken,
+    deleteAlert,
+    setAlert,
+  };
 });

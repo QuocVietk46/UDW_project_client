@@ -4,24 +4,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 const props = defineProps({
   images: {
     type: Array,
-    default: [
-      {
-        filename: 'default.jpg',
-        path: 'src\\assets\\man_12.jpg',
-      },
-      {
-        filename: 'default.jpg',
-        path: 'src\\assets\\man_11.jpg',
-      },
-      {
-        filename: 'default.jpg',
-        path: 'src\\assets\\man_13.jpg',
-      },
-      {
-        filename: 'default.jpg',
-        path: 'src\\assets\\man_14.jpg',
-      },
-    ],
+    required: true,
   },
   edit: {
     type: Boolean,

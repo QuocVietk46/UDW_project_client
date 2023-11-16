@@ -6,56 +6,59 @@ export default {
 </script>
 
 <script setup>
-import { ref } from 'vue';
+import { TransitionGroup, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import CartItem from '../components/cart/CartItem.vue';
 import { useCartStore } from '@/stores/cartStore';
+import CartTotal from '@/components/cart/CardTotal.vue';
 
 const useCart = useCartStore();
-const products = storeToRefs(useCart).products;
+const products = storeToRefs(useCart).products || [];
 const isLoading = ref(false);
-const subTotal = storeToRefs(useCart).subPrice;
-const price = storeToRefs(useCart).price;
+const subTotal = storeToRefs(useCart).subPrice || 0;
+
+onMounted(async () => {
+  isLoading.value = true;
+  await useCart.getCart();
+  isLoading.value = false;
+});
 </script>
 <template>
   <div
-    class="grid grid-cols-5 gap-x-3 py-3 min-h-[calc(100vh-314px)] px-custom-2 bg-primary"
+    class="flex justify-center gap-2 py-3 min-h-[calc(100vh-314px)] px-64 bg-primary"
   >
-    <div class="col-span-3 flex flex-col">
+    <!-- List cart -->
+    <div class="flex-grow-[3] flex flex-col gap-2">
       <div class="p-6 font-medium text-lg mb-2 bg-white">
         <p>Giỏ hàng của bạn</p>
       </div>
       <div v-if="isLoading">loading...</div>
-      <div
-        v-else
-        v-for="product in products"
-        class="px-6 bg-white overflow-hidden"
-      >
-        <CartItem :product="product" />
+      <div v-else-if="products.length !== 0" class="px-6 bg-white">
+        <TransitionGroup name="list" tag="ul">
+          <li v-for="product in products" :key="product._id">
+            <CartItem :product="product" />
+          </li>
+        </TransitionGroup>
+      </div>
+      <div v-else class="px-6 bg-white">
+        <p class="text-center py-4 font-medium text-lg">
+          Không có sản phẩm nào trong giỏ hàng
+        </p>
       </div>
       <div class="p-6 text-right mt-2 bg-white">
         <p class="font-medium text-xl">
-          Tạm tính:<span class="pl-14">{{ subTotal }}đ</span>
+          Tạm tính:<span class="pl-14">{{
+            subTotal?.toLocaleString('it-IT', {
+              style: 'currency',
+              currency: 'VND',
+            })
+          }}</span>
         </p>
       </div>
     </div>
-    <div class="bg-white p-3 col-span-2 sticky top-3 h-fit">
-      <div><h1>Tổng cộng</h1></div>
-      <div>
-        <div>
-          <span>Tạm tính</span>
-          <span>{{ subTotal }}đ</span>
-        </div>
-        <div>
-          <span>Phí vận chuyển</span>
-          <span>0đ</span>
-        </div>
-        <div>
-          <span>Tổng cộng</span>
-          <span>0đ</span>
-        </div>
-      </div>
-    </div>
+
+    <!-- Total -->
+    <CartTotal></CartTotal>
   </div>
 </template>

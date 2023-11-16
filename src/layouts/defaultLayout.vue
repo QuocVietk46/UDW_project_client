@@ -6,11 +6,8 @@ import Footer from '../components/layout/Footer.vue';
   <Header></Header>
   <router-view v-slot="{ Component }">
     <Transition name="fade">
-      <KeepAlive :exclude="['CartPage']">
-        <Suspense>
-          <component :is="Component" />
-          <template #fallback> Loading... </template>
-        </Suspense>
+      <KeepAlive :exclude="['CartPage', 'ProductPage']">
+        <component :is="Component" />
       </KeepAlive>
     </Transition>
   </router-view>
