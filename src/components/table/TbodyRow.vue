@@ -1,6 +1,6 @@
 <script setup>
 import { category, status } from "@/assets/data";
-import ViewStar from "../star/ViewStar.vue";
+import ViewStar from "../rating/ViewStar.vue";
 import ModalProduct from "../modal/ModalProduct.vue";
 
 const props = defineProps({
@@ -29,7 +29,7 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
         {{ product.sale }}%
       </span>
     </td>
-    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">
+    <td class="px-6 py-4 text-sm font-medium text-gray-500">
       <ModalProduct :product="product">
         {{ product?.title }}
       </ModalProduct>

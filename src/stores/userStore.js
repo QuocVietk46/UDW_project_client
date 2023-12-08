@@ -1,16 +1,17 @@
-import { defineStore, getActivePinia } from 'pinia';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineStore, getActivePinia } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-import { useAlertStore } from './alertStore';
-import { useCartStore } from './cartStore';
-import { postDataAPI, patchDataAPI } from '@/utils/fetchData';
+import { useAlertStore } from "./alertStore";
+import { useCartStore } from "./cartStore";
+import { postDataAPI, patchDataAPI } from "@/utils/fetchData";
+import { useException } from "@/hook/exception";
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   // State
   const user = ref({});
-  const userId = ref('');
-  const token = ref('');
+  const userId = ref("");
+  const token = ref("");
 
   const router = useRouter();
 
@@ -21,45 +22,43 @@ export const useUserStore = defineStore('user', () => {
   // Actions
   const register = async (userData) => {
     try {
-      const res = await postDataAPI({ url: 'register', data: userData });
+      const res = await postDataAPI({ url: "register", data: userData });
       setUser(res.data.user, res.data.accessToken);
       cartStore.getCart();
-      router.push({ name: 'Home' });
+      router.push({ name: "Home" });
     } catch (err) {
-      alertStore.setAlert({
-        message: err.response.data.msg || 'Không thể đăng ký',
-        type: 'error',
-      });
+      useException(err);
       console.error({ errorRegister: err });
     }
   };
 
   const login = async (userData) => {
     try {
-      const res = await postDataAPI({ url: 'login', data: userData });
+      const res = await postDataAPI({ url: "login", data: userData });
       console.log({ res });
 
       setUser(res.data.user, res.data.accessToken);
 
       await cartStore.getCart();
 
-      if (res.data.user.role === 'admin') router.push('/admin');
-      else router.push({ name: 'Home' });
+      if (res.data.user.role === "admin") router.push("/admin");
+      else router.push({ name: "Home" });
     } catch (error) {
       console.log({ errorLogin: error });
-      alertStore.setAlert({ message: 'Không thể đăng nhập', type: 'error' });
+      useException(error);
     }
   };
 
   const logout = async () => {
     try {
-      await postDataAPI({ url: 'logout', token: token.value });
+      await postDataAPI({ url: "logout", token: token.value });
       localStorage.clear();
       getActivePinia()._s.forEach((store) => store.$dispose());
-      router.push({ name: 'Login' });
+      window.location.href = "/login";
+      // router.push({ name: 'Login' });
     } catch (error) {
       console.log({ errorLogout: error });
-      alertStore.setAlert({ message: 'Không thể Đăng xuất', type: 'error' });
+      useException(error);
     }
   };
 
@@ -76,7 +75,7 @@ export const useUserStore = defineStore('user', () => {
         user.value.address = [...user.value.address, data.address];
       if (data.addressDelete)
         user.value.address = user.value.address.filter(
-          (item) => item !== data.addressDelete
+          (item) => item !== data.addressDelete,
         );
 
       await patchDataAPI({
@@ -86,16 +85,13 @@ export const useUserStore = defineStore('user', () => {
       });
     } catch (error) {
       console.error({ errorUpdateUser: error });
-      alertStore.setAlert({
-        message: 'Không thể cập nhật thông tin người dùng',
-        type: 'error',
-      });
+      useException(error);
     }
   };
 
   const refreshToken = async () => {
     try {
-      const res = await postDataAPI({ url: 'refresh_token' });
+      const res = await postDataAPI({ url: "refresh_token" });
       token.value = res.data.accessToken;
       return res.data.accessToken;
     } catch (error) {
@@ -107,7 +103,7 @@ export const useUserStore = defineStore('user', () => {
     return token.value.length > 0 ? true : false;
   };
 
-  const isAdmin = () => user.value.role === 'admin';
+  const isAdmin = () => user.value.role === "admin";
 
   return {
     user,

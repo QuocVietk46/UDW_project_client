@@ -3,17 +3,17 @@
 <template>
   <footer>
     <div
-      class="grid grid-cols-4 px-40 py-8 bg-neutral-300 select-none gap-x-10"
+      class="grid select-none grid-cols-4 gap-x-10 bg-neutral-300 px-40 py-8"
     >
       <section>
-        <h2 class="text-lg font-bold footer-title">Shopping Clothing</h2>
+        <h2 class="footer-title text-lg font-bold">Shopping Clothing</h2>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos, earum
           animi optio qui eaque ducimus.
         </p>
       </section>
       <section>
-        <h2 class="text-lg font-bold footer-title">Các sản phẩm</h2>
+        <h2 class="footer-title text-lg font-bold">Các sản phẩm</h2>
         <ul>
           <li>Tất cả sản phẩm</li>
           <li>Sản phẩm bán chạy</li>
@@ -21,7 +21,7 @@
         </ul>
       </section>
       <section>
-        <h2 class="text-lg font-bold footer-title">Các tiện ích</h2>
+        <h2 class="footer-title text-lg font-bold">Các tiện ích</h2>
         <ul>
           <li>Tài khoản của bạn</li>
           <li>Góp ý</li>
@@ -30,7 +30,7 @@
         </ul>
       </section>
       <section>
-        <h2 class="text-lg font-bold footer-title">Liên hệ</h2>
+        <h2 class="footer-title text-lg font-bold">Liên hệ</h2>
         <ul>
           <li>Ninh Kiều, Cần Thơ</li>
           <li>shoppingclothings@gmail.com</li>
@@ -38,5 +38,8 @@
         </ul>
       </section>
     </div>
+    <p class="bg-secondary py-4 text-center text-white">
+      &copy; 2021 Shopping Clothing. All rights reserved.
+    </p>
   </footer>
 </template>

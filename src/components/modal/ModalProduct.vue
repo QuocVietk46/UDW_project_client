@@ -1,43 +1,44 @@
 <script setup>
-import { ref } from 'vue';
+import { onActivated, ref } from "vue";
 
-import Carousel from '../carousel/Carousel.vue';
-import Modal from './Modal.vue';
-import { category, status } from '@/assets/data';
-import { useProductsStore } from '@/stores/productsStore';
+import Carousel from "../carousel/Carousel.vue";
+import Modal from "./Modal.vue";
+import { category, status } from "@/assets/data";
+import { useProductsStore } from "@/stores/productsStore";
 
 const props = defineProps({
   product: {
     type: Object,
     default: {
       images: [],
-      title: '',
+      title: "",
       price: undefined,
       sale: undefined,
-      description: '',
-      category: '',
-      status: '',
+      description: "",
+      category: "",
+      status: "",
     },
   },
   title: {
     type: String,
-    default: '',
+    default: "",
   },
 });
 
 const productsStore = useProductsStore();
 
 const newProduct = ref({
-  _id: '' || props.product._id,
+  _id: "",
   images: [],
-  title: '' || props.product.title,
-  price: undefined || props.product.price,
-  sale: undefined || props.product.sale,
-  describe: '' || props.product.describe,
-  quantity: undefined || props.product.quantity,
-  category: null || props.product.category,
-  status: '' || props.product.status,
+  title: "",
+  price: undefined,
+  sale: undefined,
+  describe: "",
+  quantity: undefined,
+  category: null,
+  status: "",
 });
+
 const images = ref([]);
 const deleteI = ref([]);
 const isOpen = ref(false);
@@ -60,7 +61,7 @@ const handleDeleteImage = (image) => {
     deleteI.value.push(image._id);
 
     props.product.images = props.product.images.filter(
-      (img) => img._id !== image._id
+      (img) => img._id !== image._id,
     );
 
     console.log({ deleteI: deleteI.value });
@@ -68,30 +69,42 @@ const handleDeleteImage = (image) => {
   }
   // delete image in client
   newProduct.value.images = newProduct.value.images.filter(
-    (img) => img.name !== image.filename
+    (img) => img.name !== image.filename,
   );
   images.value = images.value.filter((img) => img.filename !== image.filename);
 };
 
 const formatData = () => {
   const formData = new FormData();
-  newProduct.value.images.map((img) => formData.append('images', img));
+  newProduct.value.images.map((img) => formData.append("images", img));
 
-  newProduct.value.title !== props.product.title &&
-    formData.append('title', newProduct.value.title);
-  newProduct.value.price !== props.product.price &&
-    formData.append('price', newProduct.value.price);
-  newProduct.value.sale !== props.product.sale &&
-    formData.append('sale', newProduct.value.sale);
-  newProduct.value.describe !== props.product.describe &&
-    formData.append('describe', newProduct.value.describe);
-  newProduct.value.category !== props.product.category &&
-    formData.append('category', newProduct.value.category);
-  newProduct.value.status !== props.product.status &&
-    formData.append('status', newProduct.value.status);
-  newProduct.value.quantity !== props.product.quantity &&
-    formData.append('quantity', newProduct.value.quantity);
-  deleteI.value.length > 0 && formData.append('deleteI', deleteI.value);
+  if (newProduct.value.title && newProduct.value.title !== props.product.title)
+    formData.append("title", newProduct.value.title);
+  if (newProduct.value.price && newProduct.value.price !== props.product.price)
+    formData.append("price", newProduct.value.price);
+  if (newProduct.value.sale && newProduct.value.sale !== props.product.sale)
+    formData.append("sale", newProduct.value.sale);
+  if (
+    newProduct.value.describe &&
+    newProduct.value.describe !== props.product.describe
+  )
+    formData.append("describe", newProduct.value.describe);
+  if (
+    newProduct.value.category &&
+    newProduct.value.category !== props.product.category
+  )
+    formData.append("category", newProduct.value.category);
+  if (
+    newProduct.value.status &&
+    newProduct.value.status !== props.product.status
+  )
+    formData.append("status", newProduct.value.status);
+  if (
+    newProduct.value.quantity &&
+    newProduct.value.quantity !== props.product.quantity
+  )
+    formData.append("quantity", newProduct.value.quantity);
+  deleteI.value.length > 0 && formData.append("deleteI", deleteI.value);
   return formData;
 };
 
@@ -105,17 +118,18 @@ const handleSubmit = async () => {
   }
   deleteI.value = [];
   newProduct.value = {
-    _id: '',
+    _id: "",
     images: [],
-    title: '',
+    title: "",
     price: undefined,
     sale: undefined,
-    describe: '',
+    describe: "",
     quantity: undefined,
     category: null,
-    status: '',
+    status: "",
   };
   isLoading.value = false;
+  images.value = [];
   handleClose();
   return;
 };
@@ -132,6 +146,19 @@ const handleClose = () => {
   isOpen.value = false;
 };
 const handleOpen = () => {
+  newProduct.value = {
+    _id: props.product._id,
+    images: [],
+    title: props.product.title,
+    price: props.product.price,
+    sale: props.product.sale,
+    describe: props.product.describe,
+    quantity: props.product.quantity,
+    category: props.product.category,
+    status: props.product.status,
+  };
+  images.value = [];
+  deleteI.value = [];
   isOpen.value = true;
 };
 </script>
@@ -143,7 +170,7 @@ const handleOpen = () => {
     <div class="flex gap-2 p-4">
       <div
         v-if="images.length > 0 || props.product.images.length > 0"
-        class="w-[24rem] h-[34rem]"
+        class="h-[34rem] w-[24rem]"
       >
         <Carousel
           :images="[...props.product.images, ...images]"
@@ -153,15 +180,15 @@ const handleOpen = () => {
       </div>
       <div
         v-else
-        class="w-[24rem] h-[34rem] border-dashed border-black border-2 flex justify-center items-center"
+        class="flex h-[34rem] w-[24rem] items-center justify-center border-2 border-dashed border-black"
       >
         <label
           for="images-input"
-          class="cursor-pointer w-full h-full flex justify-center items-center hover:bg-slate-100"
+          class="flex h-full w-full cursor-pointer items-center justify-center hover:bg-slate-100"
           >Thêm hình ảnh</label
         >
       </div>
-      <div class="flex flex-col gap-5 min-w-[25rem]">
+      <div class="flex min-w-[25rem] flex-col gap-5">
         <input
           @change="handleInputImages"
           type="file"
@@ -174,28 +201,28 @@ const handleOpen = () => {
           type="text"
           name="title"
           v-model="newProduct.title"
-          class="p-1 border-2 bg-inherit"
+          class="border-2 bg-inherit p-1"
           placeholder="Tiêu đề sản phẩm"
         />
         <div
-          class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['VND'] after:text-gray-400"
+          class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:text-gray-400 after:content-['VND']"
         >
           <input
             type="number"
             name="price"
             v-model="newProduct.price"
-            class="p-1 border-2 bg-inherit w-full"
+            class="w-full border-2 bg-inherit p-1"
             placeholder="Giá sản phẩm"
           />
         </div>
         <div
-          class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:content-['%'] after:text-gray-400"
+          class="relative after:absolute after:right-10 after:top-1/2 after:-translate-y-1/2 after:text-gray-400 after:content-['%']"
         >
           <input
             type="number"
             name="sale"
             v-model="newProduct.sale"
-            class="p-1 border-2 bg-inherit w-full"
+            class="w-full border-2 bg-inherit p-1"
             placeholder="Giảm giá (nếu có)"
           />
         </div>
@@ -203,7 +230,7 @@ const handleOpen = () => {
           type="number"
           name="quantity"
           v-model="newProduct.quantity"
-          class="p-1 border-2 bg-inherit w-full"
+          class="w-full border-2 bg-inherit p-1"
           placeholder="Số lượng sản phẩm"
         />
         <textarea
@@ -212,11 +239,11 @@ const handleOpen = () => {
           type="text"
           name="describe"
           v-model="newProduct.describe"
-          class="p-1 border-2 bg-inherit"
+          class="border-2 bg-inherit p-1"
           placeholder="Mô tả sản phẩm"
         ></textarea>
         <select
-          class="p-1 border-2 bg-inherit"
+          class="border-2 bg-inherit p-1"
           name="category"
           v-model="newProduct.category"
         >
@@ -226,7 +253,7 @@ const handleOpen = () => {
           </option>
         </select>
         <select
-          class="p-1 border-2 bg-inherit"
+          class="border-2 bg-inherit p-1"
           name="status"
           v-model="newProduct.status"
         >
@@ -237,23 +264,23 @@ const handleOpen = () => {
         </select>
         <label
           for="images-input"
-          class="px-4 py-2 text-center cursor-pointer bg-slate-200 hover:shadow-md hover:bg-slate-300"
+          class="cursor-pointer bg-slate-200 px-4 py-2 text-center hover:bg-slate-300 hover:shadow-md"
         >
           Thêm ảnh
         </label>
       </div>
     </div>
-    <div class="flex gap-4 px-4 pb-4 justify-end">
+    <div class="flex justify-end gap-4 px-4 pb-4">
       <button
         @click="handleClose"
-        class="px-6 py-2 hover:bg-red-500 hover:shadow-md hover:text-white"
+        class="px-6 py-2 hover:bg-red-500 hover:text-white hover:shadow-md"
       >
         Đóng
       </button>
       <div>
         <div v-if="isLoading">
-          <button type="button" class="px-6 py-2 bg-fuchsia-200 flex" disabled>
-            <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+          <button type="button" class="flex bg-fuchsia-200 px-6 py-2" disabled>
+            <svg class="mr-3 h-5 w-5 animate-spin" viewBox="0 0 24 24">
               <circle
                 className="opacity-25"
                 cx="12"
@@ -275,13 +302,13 @@ const handleOpen = () => {
             <button
               v-if="props.product.status === 'draft'"
               @click="handleDelete"
-              class="px-6 py-2 bg-red-400 hover:bg-red-500 hover:text-white hover:shadow-md"
+              class="bg-red-400 px-6 py-2 hover:bg-red-500 hover:text-white hover:shadow-md"
             >
               Xoá
             </button>
             <button
               @click="handleSubmit"
-              class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
+              class="bg-fuchsia-200 px-6 py-2 hover:bg-fuchsia-300 hover:shadow-md"
             >
               Cập nhật
             </button>
@@ -290,7 +317,7 @@ const handleOpen = () => {
             v-else
             type="submit"
             @click="handleSubmit"
-            class="px-6 py-2 bg-fuchsia-200 hover:bg-fuchsia-300 hover:shadow-md"
+            class="bg-fuchsia-200 px-6 py-2 hover:bg-fuchsia-300 hover:shadow-md"
           >
             Thêm
           </button>

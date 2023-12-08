@@ -1,6 +1,6 @@
 <script setup>
-import { reactive } from 'vue';
-import { useCartStore } from '@/stores/cartStore';
+import { reactive } from "vue";
+import { useCartStore } from "@/stores/cartStore";
 
 const props = defineProps({
   product: {
@@ -9,14 +9,18 @@ const props = defineProps({
   },
 });
 
-const { product, quantity } = props.product;
+const { product, quantity, error = "" } = props.product;
+
 const useCart = useCartStore();
 const { updateCart, removeProductFromCart } = useCart;
+
 const change = reactive({
   isDeleted: false,
   isChange: false,
   preQuantity: quantity,
   quantity: quantity,
+  error: error,
+
   handleChange: (e) => {
     change.quantity = e.target.value;
     change.isChange = true;
@@ -29,10 +33,15 @@ const change = reactive({
     await updateCart({ productId: product._id, quantity: change.quantity });
     change.preQuantity = change.quantity;
     change.isChange = false;
+    if (quantity < change.quantity) {
+      change.error = "Chỉ còn " + quantity + " sản phẩm trong kho";
+    } else {
+      change.error = "";
+    }
   },
   handleDelete: async () => {
     await removeProductFromCart({ productId: product._id });
-    console.log('delete');
+    console.log("delete");
     change.isDeleted = true;
     change.isChange = false;
   },
@@ -43,10 +52,10 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 <template>
   <Transition name="slide-fade">
     <section
-      v-if="!change.isDeleted"
+      v-if="!change.isDeleted && product"
       class="pointer-events-none"
       :class="{
-        'before:absolute before:top-0 before:left-0 before:w-screen before:h-screen before:backdrop-blur-sm before:z-[50]':
+        'before:absolute before:left-0 before:top-0 before:z-[50] before:h-screen before:w-screen before:backdrop-blur-sm':
           change.isChange,
       }"
     >
@@ -58,11 +67,11 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
           <img
             :src="SERVER_URL + product.images[0].path"
             alt=""
-            class="w-[110px] h-[140px] object-cover"
+            class="h-[140px] w-[110px] object-cover"
           />
           <span
             v-if="product.sale"
-            class="absolute top-2 left-0 bg-white px-2 py-1 opacity-80"
+            class="absolute left-0 top-2 bg-white px-2 py-1 opacity-80"
           >
             {{ product.sale }}%
           </span>
@@ -74,32 +83,32 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
                 (
                   product.price -
                   product.price * (product.sale / 100)
-                ).toLocaleString('it-IT', {
-                  style: 'currency',
-                  currency: 'VND',
+                ).toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
                 })
               }}
             </span>
             <span
               :class="
                 product.sale > 0 &&
-                'relative text-base opacity-80 before:absolute before:opacity-80 before:h-[2px] before:bg-black before:top-1/2 before:left-0 before:w-full'
+                'relative text-base opacity-80 before:absolute before:left-0 before:top-1/2 before:h-[2px] before:w-full before:bg-black before:opacity-80'
               "
             >
               {{
-                product.price.toLocaleString('it-IT', {
-                  style: 'currency',
-                  currency: 'VND',
+                product.price.toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
                 })
               }}
             </span>
           </p>
-          <h1 class="text-2xl font-bold py-2">{{ product.title }}</h1>
+          <h1 class="py-2 text-2xl font-bold">{{ product.title }}</h1>
           <div class="flex items-center">
             <p>Số lượng:</p>
             <select
               name="quantity"
-              class="px-2 py-1 outline-none pointer-events-auto cursor-pointer"
+              class="pointer-events-auto cursor-pointer px-2 py-1 outline-none"
               :value="change.quantity"
               @change="change.handleChange"
             >
@@ -108,6 +117,9 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
               </option>
             </select>
           </div>
+          <small v-if="change.error" class="text-red-600">{{
+            change.error
+          }}</small>
         </div>
         <div>
           <button class="pointer-events-auto" @click="change.handleDelete">
@@ -118,7 +130,7 @@ const options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
       <div
         v-if="change.isChange"
         :class="{ 'relative z-[60]': change.isChange }"
-        class="relative border-b-[1px] border-[#eee] py-4 bg-white flex justify-end p-4 pointer-events-auto"
+        class="pointer-events-auto relative flex justify-end gap-2 border-b-[1px] border-[#eee] bg-white p-4 py-4"
       >
         <button @click="change.handleCancel">Huỷ</button>
         <button @click="change.handleUpdate">Cập nhật</button>

@@ -1,14 +1,14 @@
 <script setup>
-import SideBar from '../components/sideBar/SideBar.vue';
+import SideBar from "../components/sideBar/SideBar.vue";
 </script>
 <template>
   <div class="relative">
-    <SideBar class="w-sideBar fixed top-0 left-0 h-screen" />
+    <SideBar class="fixed left-0 top-0 h-screen w-sideBar" />
     <div class="ml-sideBar h-screen">
       <router-view v-slot="{ Component }">
         <Transition name="fade">
           <KeepAlive :exclude="['CartPage']">
-            <component :is="Component" class="bg-primary" />
+            <component :is="Component" class="min-h-screen bg-primary" />
           </KeepAlive>
         </Transition>
       </router-view>

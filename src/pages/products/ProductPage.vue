@@ -13,7 +13,7 @@ import { useProductsStore } from "@/stores/productsStore";
 import { useCartStore } from "@/stores/cartStore";
 import Carousel from "@/components/carousel/Carousel.vue";
 import { category } from "@/assets/data";
-import InputRating from "@/components/rating/InputRating.vue";
+import ViewStar from "@/components/rating/ViewStar.vue";
 import Comment from "@/components/product/Comment.vue";
 
 const route = useRoute();
@@ -33,11 +33,6 @@ const fetchProductById = async () => {
   isLoading.value = true;
   await productsStore.fetchProductById(route.params.id);
   isLoading.value = false;
-};
-
-const handleRating = async () => {
-  await productsStore.rateProductById(route.params.id, rating.value);
-  rating.isChange = false;
 };
 
 const handleAddToCart = async () => {
@@ -62,29 +57,11 @@ onMounted(async () => {
         <div class="space-y-4 pl-8">
           <h1 class="text-3xl font-medium">{{ product.title }}</h1>
           <div class="flex items-center gap-2">
-            <InputRating
-              :max-stars="5"
-              :value="product.rate"
-              @onChange="
-                (value) => {
-                  rating.value = value;
-                  rating.isChange = true;
-                }
-              "
-            ></InputRating>
+            <ViewStar :star="product.rate" />
             <p class="text-lg font-light opacity-80">
               {{ rates.length }} đánh giá
             </p>
           </div>
-          <Transition name="fade">
-            <button
-              v-if="rating.isChange"
-              class="p-2 hover:bg-gray-300"
-              @click="handleRating"
-            >
-              Đánh giá
-            </button>
-          </Transition>
           <p class="text-xl font-medium">
             <span class="pr-2 text-lg text-[#d01345]" v-if="product.sale > 0">
               {{

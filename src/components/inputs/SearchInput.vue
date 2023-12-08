@@ -1,11 +1,11 @@
 <script setup>
-import { ref, toRef, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const props = defineProps({
   py: {
     type: String,
-    default: 'py-2',
+    default: "py-2",
   },
   showBtn: {
     type: Boolean,
@@ -13,22 +13,21 @@ const props = defineProps({
   },
   push: {
     type: String,
-    default: 'Products',
+    default: "Products",
   },
 });
 
-const emit = defineEmits(['value']);
+const emit = defineEmits(["value"]);
 
 const router = useRouter();
 const route = useRoute();
 
 const { search, ...rest } = route.query;
-const searchText = ref(search || '');
+const searchText = ref("" || search);
 const isFocus = ref(false);
 
 const handleSubmit = async () => {
-  console.log(searchText.value);
-  if (!searchText.value || search) return;
+  if (searchText.value === search) return;
 
   router.push({
     name: props.push,
@@ -40,7 +39,7 @@ const handleSubmit = async () => {
 };
 
 const handleDelete = () => {
-  searchText.value = '';
+  searchText.value = "";
   router.push({
     name: props.push,
     query: {
@@ -52,23 +51,25 @@ const handleDelete = () => {
 watch(
   () => searchText.value,
   () => {
-    emit('value', searchText.value);
+    emit("value", searchText.value);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 <template>
-  {{ console.log(searchText) }}
   <div
     :class="py"
-    class="w-full border px-4 rounded-3xl bg-white flex justify-between pointer-events-none focus-within:ring-2 focus-within:ring-gray-400 focus-within:ring-offset-2"
+    class="pointer-events-none flex w-full justify-between rounded-3xl border bg-white px-4 focus-within:ring-2 focus-within:ring-gray-400 focus-within:ring-offset-2"
   >
-    <form @submit.prevent="handleSubmit" class="flex-grow flex">
+    <div class="flex flex-grow">
       <input
+        name="search"
+        type="text"
         v-model="searchText"
         @focus="isFocus = true"
         @blur="isFocus = false"
-        class="outline-none text-black px-3 pointer-events-auto w-full h-full"
+        @keydown.enter="handleSubmit"
+        class="pointer-events-auto h-full w-full px-3 text-black outline-none"
       />
 
       <button
@@ -76,14 +77,14 @@ watch(
         class="pointer-events-auto opacity-50 hover:opacity-100 focus:outline-none"
         :class="searchText ? 'visible' : 'invisible'"
       >
-        <i class="fa-solid fa-xmark"></i>
+        <i class="fa-solid fa-xmark text-black"></i>
       </button>
 
-      <button type="submit" v-if="showBtn">
+      <button @click="handleSubmit" v-if="showBtn">
         <i
-          class="fa-solid fa-magnifying-glass p-2 text-black pointer-events-auto hover:cursor-pointer"
+          class="fa-solid fa-magnifying-glass pointer-events-auto p-2 text-black hover:cursor-pointer"
         ></i>
       </button>
-    </form>
+    </div>
   </div>
 </template>

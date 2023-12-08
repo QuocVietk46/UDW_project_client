@@ -1,20 +1,21 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import jsPDF from "jspdf";
 
-import { getDataAPI, postDataAPI, patchDataAPI } from '@/utils/fetchData';
-import { useUserStore } from './userStore';
-import { useCartStore } from './cartStore';
+import { getDataAPI, postDataAPI, patchDataAPI } from "@/utils/fetchData";
+import { useUserStore } from "./userStore";
+import { useCartStore } from "./cartStore";
 
-export const useOrderStore = defineStore('order', () => {
+export const useOrderStore = defineStore("order", () => {
   const orders = ref([]);
 
   const userStore = useUserStore();
   const cartStore = useCartStore();
 
-  const getOrders = async (status = 'all') => {
+  const getOrders = async (status = "all") => {
     try {
       const res = await getDataAPI({
-        url: 'order',
+        url: "order",
         token: userStore.token,
         query: { status },
       });
@@ -25,10 +26,14 @@ export const useOrderStore = defineStore('order', () => {
     }
   };
 
+  const getOrder = (id) => {
+    return orders.value.find((order) => order._id === id);
+  };
+
   const getOrdersAdmin = async (status) => {
     try {
       const res = await getDataAPI({
-        url: 'admin/order',
+        url: "admin/order",
         token: userStore.token,
         query: { status },
       });
@@ -49,18 +54,30 @@ export const useOrderStore = defineStore('order', () => {
       });
       console.log(res.data.newOrder);
       orders.value = orders.value.map((order) =>
-        order._id === id ? res.data.newOrder : order
+        order._id === id ? res.data.newOrder : order,
       );
     } catch (error) {
       console.error(error);
     }
   };
 
-  const addOrder = async (order) => {
+  const addOrder = async (order, query = {}) => {
     try {
-      console.log({ order });
+      console.log({ order, query });
       const res = await postDataAPI({
-        url: 'order',
+        url:
+          "order?vnp_Amount=" +
+          query.vnp_Amount +
+          "&vnp_BankCode=" +
+          query.vnp_BankCode +
+          "&vnp_BankTranNo=" +
+          query.vnp_BankTranNo +
+          "&vnp_CardType=" +
+          query.vnp_CardType +
+          "&vnp_PayDate=" +
+          query.vnp_PayDate +
+          "&vnp_ResponseCode=" +
+          query.vnp_ResponseCode,
         data: order,
         token: userStore.token,
       });
@@ -77,11 +94,11 @@ export const useOrderStore = defineStore('order', () => {
     try {
       console.log({ order });
       const res = await postDataAPI({
-        url: 'order/payment_vnpay',
+        url: "order/payment_vnpay",
         data: order,
         token: userStore.token,
       });
-      console.log({ res });
+      // console.log({ res });
       // cartStore.cleanCart();
       window.location.href = res.data.vnpUrl;
       return true;
@@ -94,6 +111,7 @@ export const useOrderStore = defineStore('order', () => {
   return {
     orders,
     getOrdersAdmin,
+    getOrder,
     addOrder,
     addOrderVNPay,
     getOrders,

@@ -1,21 +1,29 @@
 <script setup>
-import CardProduct from './CardProduct.vue';
+import CardProduct from "../CardTotal.vue";
+
+const props = defineProps({
+  productTotal: {
+    type: Object,
+    default: {},
+  },
+});
+
 const listProductTotal = [
   {
-    title: 'Đánh giá',
-    value: 10,
-    to: { name: 'ManagerOrders' },
+    title: "Đánh giá",
+    value: props.productTotal.countRating || 0,
+    class: "bg-secondary",
   },
   {
-    title: 'Bình luận',
-    value: 10,
-    to: { name: 'ManagerOrders' },
+    title: "Bình luận",
+    value: props.productTotal.countComment || 0,
+    class: "bg-secondary",
   },
   {
-    title: 'Sản phẩm',
-    value: 10,
-    to: { name: 'ManagerOrders' },
-    class: 'col-span-2',
+    title: "Sản phẩm",
+    value: props.productTotal.countProduct || 0,
+    to: { name: "ManagerOrders" },
+    class: "col-span-2 bg-secondary",
   },
 ];
 </script>

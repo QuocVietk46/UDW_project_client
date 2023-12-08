@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from 'vue';
-import { Form } from 'vee-validate';
+import { ref } from "vue";
+import { Form } from "vee-validate";
 
-import loginSchema from './validation.js';
-import TextInput from '@/components/inputs/TextInput.vue';
-import { useUserStore } from '@/stores/userStore';
+import loginSchema from "./validation.js";
+import TextInput from "@/components/inputs/TextInput.vue";
+import { useUserStore } from "@/stores/userStore";
 
 const { login } = useUserStore();
 
@@ -26,17 +26,17 @@ const onSubmit = async (values) => {
 </script>
 
 <template>
-  <section class="row-span-5 flex items-center flex-col mt-20">
-    <div class="bg-white shadow-lg px-24 min-w-[40rem]">
+  <section class="row-span-5 mt-20 flex flex-col items-center">
+    <div class="min-w-[40rem] bg-white px-24 shadow-lg">
       <div class="py-16">
-        <h1 class="text-2xl font-bold text-center">Đăng nhập</h1>
+        <h1 class="text-center text-2xl font-bold">Đăng nhập</h1>
       </div>
       <Form
         @submit="onSubmit"
         :validation-schema="loginSchema"
         @invalid-submit="onInvalidSubmit"
       >
-        <div class="flex gap-y-8 flex-col">
+        <div class="flex flex-col gap-y-8">
           <TextInput
             class="input-form"
             name="email"
@@ -47,12 +47,12 @@ const onSubmit = async (values) => {
             class="input-form"
             name="password"
             type="password"
-            placeholder="Địa chỉ email"
+            placeholder="Mật khẩu"
           />
           <div class="flex justify-end">
             <router-link
               :to="{ name: 'Forgot-password' }"
-              class="text-blue-500 translate-y-[-50%] hover:text-blue-700"
+              class="translate-y-[-50%] text-blue-500 hover:text-blue-700"
               >Bạn quên mật khẩu?</router-link
             >
           </div>
@@ -69,7 +69,7 @@ const onSubmit = async (values) => {
       </Form>
 
       <div class="py-10">
-        <p class="text-sm text-center">
+        <p class="text-center text-sm">
           Bạn chưa có tài khoản?
           <router-link
             :to="{ name: 'Register' }"

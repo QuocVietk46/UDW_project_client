@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 const props = defineProps({
   value: {
     type: Number,
@@ -11,7 +11,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['onChange']);
+const emit = defineEmits(["onChange"]);
 
 const rating = ref(props.value);
 const isHovered = ref(false);
@@ -19,7 +19,7 @@ const hoverValue = ref(0);
 
 const setRating = (newRating) => {
   rating.value = newRating;
-  emit('onChange', rating.value);
+  emit("onChange", rating.value);
 };
 
 const hoverRating = (value) => {
@@ -58,7 +58,7 @@ const resetHover = () => {
   display: inline-block;
   cursor: pointer;
   margin: 2px;
-  color: rgb(222, 222, 222);
+  color: #d3d3d3;
 }
 
 .filled {

@@ -1,69 +1,31 @@
 <script setup>
-import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
 
-import SearchInput from '../inputs/searchInput.vue';
-import UserButton from '../buttons/UserButton.vue';
-import Bade from '../bade/index.vue';
-import { useCartStore } from '../../stores/cartStore';
+import SearchInput from "../inputs/searchInput.vue";
+import UserButton from "../buttons/UserButton.vue";
+import Bade from "../bade/index.vue";
+import { useCartStore } from "../../stores/cartStore";
+import { listNav } from "@/assets/data";
 
-const route = useRoute();
-
-const listNav = [
-  {
-    title: 'Toàn bộ',
-    to: 'Products',
-  },
-  {
-    title: 'Áo sơ mi',
-    to: 'Products',
-    query: { category: 'shirts' },
-  },
-  {
-    title: 'Áo thun',
-    to: 'Products',
-    query: { category: 't-shirt' },
-  },
-  {
-    title: 'Áo short',
-    to: 'Products',
-    query: { category: 'short' },
-  },
-  {
-    title: 'Quần dài',
-    to: 'Products',
-    query: { category: 'pant' },
-  },
-  {
-    title: 'Quần jean',
-    to: 'Products',
-    query: { category: 'jeans' },
-  },
-  {
-    title: 'Áo khoác',
-    to: 'Products',
-    query: { category: 'jacket' },
-  },
-];
-
-const search = route.query.search;
+const search = ref("");
 const value = storeToRefs(useCartStore()).amount;
 </script>
 
 <template>
   <header>
-    <div class="px-40 bg-secondary text-white select-none">
-      <div class="flex justify-between items-center">
+    <div class="select-none bg-secondary px-40 text-white">
+      <div class="flex items-center justify-between">
         <div class="flex">
           <router-link :to="{ name: 'Home' }">
-            <h1 class="font-bold text-2xl p-4 pl-0">LOGO</h1>
+            <h1 class="p-4 pl-0 text-2xl font-semibold uppercase">Clothing</h1>
           </router-link>
-          <h1 class="font-bold text-2xl p-4 bg-[#525050] whitespace-nowrap">
+          <h1 class="whitespace-nowrap bg-[#525050] p-4 text-2xl font-bold">
             SẢN PHẨM
           </h1>
         </div>
         <div class="mx-10 w-full px-14">
-          <SearchInput py="py-1" />
+          <SearchInput py="py-1" @value="(value) => (search = value)" />
         </div>
         <div class="flex items-center">
           <Bade :value="value" class="p-2">
@@ -75,11 +37,17 @@ const value = storeToRefs(useCartStore()).amount;
         </div>
       </div>
     </div>
-    <div class="px-40 bg-[#525050] text-white select-none">
+    <div class="select-none bg-[#525050] px-40 text-white">
       <ul class="flex">
         <li v-for="nav in listNav" class="uppercase">
           <router-link
-            :to="{ name: nav.to, query: { ...nav.query, search } }"
+            :to="{
+              name: nav.to,
+              query: {
+                ...nav.query,
+                ...(search && { search }),
+              },
+            }"
             class="btn-nav"
             >{{ nav.title }}</router-link
           >

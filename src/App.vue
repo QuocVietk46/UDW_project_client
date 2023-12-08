@@ -1,6 +1,6 @@
 <script setup>
-import Alert from '@/components/Alert.vue';
-import { useAlertStore } from '@/stores/alertStore';
+import Alert from "@/components/Alert.vue";
+import { useAlertStore } from "@/stores/alertStore";
 
 const alertStore = useAlertStore();
 </script>

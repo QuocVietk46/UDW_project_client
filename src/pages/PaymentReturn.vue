@@ -1,7 +1,7 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
-import { useOrderStore } from '@/stores/orderStore';
-import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from "vue-router";
+import { useOrderStore } from "@/stores/orderStore";
+import { onMounted, ref } from "vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -10,14 +10,31 @@ const orderStore = useOrderStore();
 const isLoading = ref(false);
 onMounted(async () => {
   isLoading.value = true;
-  await orderStore.addOrder({
-    full_name: route.query.full_name,
-    phone: route.query.phone,
-    address: route.query.address,
-    payment: route.query.payment,
-  });
+  const res = await orderStore.addOrder(
+    {
+      full_name: route.query.full_name,
+      phone: route.query.phone,
+      address: route.query.address,
+      payment: route.query.payment,
+    },
+    {
+      vnp_Amount: route.query.vnp_Amount,
+      vnp_BankCode: route.query.vnp_BankCode,
+      vnp_BankTranNo: route.query.vnp_BankTranNo,
+      vnp_CardType: route.query.vnp_CardType,
+      vnp_PayDate: route.query.vnp_PayDate,
+      vnp_ResponseCode: route.query.vnp_ResponseCode,
+    },
+  );
   isLoading.value = false;
-  router.push({ name: 'Thanks' });
+  console.log(res);
+  if (res === false) {
+    router.push({ name: "ErrorPayment" });
+    console.log("error");
+    return;
+  }
+  console.log("success");
+  router.push({ name: "Thanks" });
 });
 console.log(route.query);
 </script>

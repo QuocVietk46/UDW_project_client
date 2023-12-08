@@ -1,30 +1,43 @@
 <script setup>
-import CardTotal from './CardTotal.vue';
+import CardTotal from "../CardTotal.vue";
+
+const props = defineProps({
+  orderTotal: {
+    type: Object,
+    default: {},
+  },
+});
+
+console.log(props.orderTotal);
+
 const listCartTotal = [
   {
-    status: 'pending',
-    title: 'Chờ xử lý',
-    value: 10,
-    to: { name: 'ManagerOrders' },
-    class: 'bg-gradient-to-r from-violet-500 to-violet-800',
+    status: "pending",
+    title: "Chờ xử lý",
+    value: props.orderTotal.countPending || 0,
+    to: { name: "ManagerOrders" },
+    class: "bg-gradient-to-r from-violet-500 to-violet-800 text-white",
   },
   {
-    title: 'Đang vận chuyển',
-    value: 10,
-    to: { name: 'ManagerOrders' },
-    class: 'bg-gradient-to-r from-sky-500 to-sky-800',
+    status: "shipping",
+    title: "Đang vận chuyển",
+    value: props.orderTotal.countShipping || 0,
+    to: { name: "ManagerOrders" },
+    class: "bg-gradient-to-r from-sky-500 to-sky-800 text-white",
   },
   {
-    title: 'Thành công',
-    value: 10,
-    to: { name: 'ManagerOrders' },
-    class: 'bg-gradient-to-r from-orange-400 to-orange-800',
+    status: "delivered",
+    title: "Thành công",
+    value: props.orderTotal.countDelivered || 0,
+    to: { name: "ManagerOrders" },
+    class: "bg-gradient-to-r from-orange-400 to-orange-800 text-white",
   },
   {
-    title: 'Thất bại',
-    value: 10,
-    to: { name: 'ManagerOrders' },
-    class: 'bg-gradient-to-r from-red-400 to-red-800',
+    status: "cancel",
+    title: "Thất bại",
+    value: props.orderTotal.countCancel || 0,
+    to: { name: "ManagerOrders" },
+    class: "bg-gradient-to-r from-red-400 to-red-800 text-white",
   },
 ];
 </script>
@@ -37,6 +50,7 @@ const listCartTotal = [
       :value="cartTotal.value"
       :title="cartTotal.title"
       :to="cartTotal.to"
+      :status="cartTotal.status"
     >
     </CardTotal>
   </div>
